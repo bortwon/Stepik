@@ -26,24 +26,30 @@ random_num = random.randint(1, 100)
 
 
 def is_valid(num):
-    return 1 <= num <= 100
+    return num.isdigit() and 1 <= int(num) <= 100
 
 
 def quess_number():
+    print('Добро пожаловать в числовую угадайку')
+    counter = 0
     while True:
-        user_num = int(input())
+        user_num = input()
         if is_valid(num=user_num):
+            user_num = int(user_num)
             if user_num < random_num:
                 print('Слишком мало, попробуйте еще раз')
+                counter += 1
             elif user_num > random_num:
                 print('Слишком много, попробуйте еще раз')
+                counter += 1
             else:
-                return 'Вы угадали, поздравляем!'
+                print('Вы угадали, поздравляем!')
+                counter += 1
+                print('Количество проделанных попыток:', counter)
+                return 'Спасибо, что играли в числовую угадайку. Еще увидимся...'
         else:
             print('А может быть все-таки введем целое число от 1 до 100?')
+            counter += 1
 
-
-print('Добро пожаловать в числовую угадайку')
 
 print(quess_number())
-
