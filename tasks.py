@@ -22,7 +22,13 @@
 
 import random
 
+
 random_num = random.randint(1, 100)
+
+
+def is_valid(num):
+    return num.isdigit() and 1 <= num <= 100
+
 
 print('Добро пожаловать в числовую угадайку')
 
