@@ -24,6 +24,8 @@ import random
 
 random_num = random.randint(1, 100)
 
+print('Добро пожаловать в числовую угадайку')
+
 while True:
     user_num = int(input())
     if user_num < random_num:
