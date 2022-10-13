@@ -22,22 +22,28 @@
 
 import random
 
-
 random_num = random.randint(1, 100)
 
 
 def is_valid(num):
-    return num.isdigit() and 1 <= num <= 100
+    return 1 <= num <= 100
+
+
+def quess_number():
+    while True:
+        user_num = int(input())
+        if is_valid(num=user_num):
+            if user_num < random_num:
+                print('Слишком мало, попробуйте еще раз')
+            elif user_num > random_num:
+                print('Слишком много, попробуйте еще раз')
+            else:
+                return 'Вы угадали, поздравляем!'
+        else:
+            print('А может быть все-таки введем целое число от 1 до 100?')
 
 
 print('Добро пожаловать в числовую угадайку')
 
-while True:
-    user_num = int(input())
-    if user_num < random_num:
-        print('Слишком мало, попробуйте еще раз')
-    elif user_num > random_num:
-        print('Слишком много, попробуйте еще раз')
-    else:
-        print('Вы угадали, поздравляем!')
-        break
+print(quess_number())
+
