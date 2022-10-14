@@ -182,4 +182,81 @@ def gener_password():
             break
 
 
-gener_password()
+# gener_password()
+
+
+
+
+# ШИФР ЦЕЗАРЯ
+import time
+
+what_purpose = input('Что нужно сделать: шифровать или дешифровать?\n').lower()
+while what_purpose != 'шифровать' and what_purpose != 'дешифровать':
+    what_purpose = input('Вы не ввели цель задачи! Выберите: шифровать или дешифровать.\n')
+
+what_lang = input('Какой нужен язык: русский или английский?\n').lower()
+while what_lang != 'русский' and what_lang != 'английский':
+    what_lang = input('Вы не ввели язык! Выберите: русский или английский.\n')
+
+what_step = input('Какой нужен шаг?\n')
+while what_step.isdigit() != True:
+    what_step = input('Ввод неверный! Введите число:\n')
+
+what_text = input('Введите необходимый текст:\n')
+while what_text.isspace() == True:
+    what_text = input('Ввод неверный! Введите текст:\n')
+
+
+def cezar(purpose, lang, step, text):
+
+    upper_eng_alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    lower_eng_alphabet = 'abcdefghijklmnopqrstuvwxyz'
+    upper_rus_alphabet = 'АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
+    lower_rus_alphabet = 'абвгдежзийклмнопрстуфхцчшщъыьэюя'
+
+    if purpose == 'шифровать':
+        res = ''
+        if lang == 'русский':
+            for i in range(len(text)):
+                if text[i].isalpha():
+                    if text[i].islower():
+                        res += lower_rus_alphabet[(lower_rus_alphabet.index(text[i]) + int(step)) % len(lower_rus_alphabet)]
+                    else:
+                        res += upper_rus_alphabet[(upper_rus_alphabet.index(text[i]) + int(step)) % len(upper_rus_alphabet)]
+                else:
+                    res += text[i]
+        elif lang == 'английский':
+            for i in range(len(text)):
+                if text[i].isalpha():
+                    if text[i].islower():
+                        res += lower_eng_alphabet[(lower_eng_alphabet.index(text[i]) + int(step)) % len(lower_eng_alphabet)]
+                    else:
+                        res += upper_eng_alphabet[(upper_eng_alphabet.index(text[i]) + int(step)) % len(upper_eng_alphabet)]
+                else:
+                    res += text[i]
+        print('Пусть все тайное станет явным... AVA\nЗашифрованный текст:', res)
+    elif purpose == 'дешифровать':
+        res = ''
+        if lang == 'русский':
+            for i in range(len(text)):
+                if text[i].isalpha():
+                    if text[i].islower():
+                        res += lower_rus_alphabet[(lower_rus_alphabet.index(text[i]) - int(step)) % len(lower_rus_alphabet)]
+                    else:
+                        res += upper_rus_alphabet[(upper_rus_alphabet.index(text[i]) - int(step)) % len(upper_rus_alphabet)]
+                else:
+                    res += text[i]
+        elif lang == 'английский':
+            for i in range(len(text)):
+                if text[i].isalpha():
+                    if text[i].islower():
+                        res += lower_eng_alphabet[(lower_eng_alphabet.index(text[i]) - int(step)) % len(lower_eng_alphabet)]
+                    else:
+                        res += upper_eng_alphabet[(upper_eng_alphabet.index(text[i]) - int(step)) % len(upper_eng_alphabet)]
+                else:
+                    res += text[i]
+        print('Пусть все тайное станет явным... AVA\nДешифрованный текст:', res)
+    print('Прощай....AVA')
+
+
+cezar(purpose=what_purpose, lang=what_lang, step=what_step, text=what_text)
