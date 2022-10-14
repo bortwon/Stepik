@@ -97,3 +97,89 @@ def ball_of_destiny():
 
 
 # ball_of_destiny()
+
+
+
+
+# ГЕНЕРАТОР ПАРОЛЕЙ
+
+def gener_password():
+
+    digits = '23456789'
+    lowercase_letters = 'abcdefghjkmnpqrstuvwxyz'
+    uppercase_letters = 'ABCDEFGHIJKMNPQRSTUVWXYZ'
+    punctuation = '#$%&*+-=?@^_.'
+    similar = 'il1Lo0O'
+
+    while True:
+        chars = ''
+        res = ''
+        qua_passw = int(input('Введите количество паролей, которые нужно сгенерировать:\n'))
+        length_passw = int(input('Введите желаемую длину пароля(-ей):\n'))
+        while True:
+            want_digits = input('Включать ли цифры в пароль?\nВведите Да или Нет:\n')
+            if want_digits.lower() == 'да':
+                chars += digits
+                break
+            elif want_digits.lower() == 'нет':
+                break
+            else:
+                print('Я Вас не понимаю. ВВЕДИТЕ ДА ИЛИ НЕТ!')
+        while True:
+            want_lower_letters = input('Включать ли строчные буквы в пароль?\nВведите Да или Нет:\n')
+            if want_lower_letters.lower() == 'да':
+                chars += lowercase_letters
+                break
+            elif want_lower_letters.lower() == 'нет':
+                break
+            else:
+                print('Я Вас не понимаю. ВВЕДИТЕ ДА ИЛИ НЕТ!')
+        while True:
+            want_upper_letters = input('Включать ли прописные буквы в пароль?\nВведите Да или Нет:\n')
+            if want_upper_letters.lower() == 'да':
+                chars += uppercase_letters
+                break
+            elif want_upper_letters.lower() == 'нет':
+                break
+            else:
+                print('Я Вас не понимаю. ВВЕДИТЕ ДА ИЛИ НЕТ!')
+        while True:
+            want_symbols = input('Включать ли специальные символы в пароль?\nВведите Да или Нет:\n')
+            if want_symbols.lower() == 'да':
+                chars += punctuation
+                break
+            elif want_symbols.lower() == 'нет':
+                break
+            else:
+                print('Я Вас не понимаю. ВВЕДИТЕ ДА ИЛИ НЕТ!')
+        while True:
+            want_similar = input('Включать ли неоднозначные символы в пароль?\nВведите Да или Нет:\n')
+            if want_similar.lower() == 'да':
+                chars += similar
+                break
+            elif want_similar.lower() == 'нет':
+                break
+            else:
+                print('Я Вас не понимаю. ВВЕДИТЕ ДА ИЛИ НЕТ!')
+
+        for i in range(qua_passw):
+            res = ''
+            for j in range(length_passw):
+                res += choice(chars)
+            print(res)
+
+        while True:
+            finish_check = input('Хотите ли Вы подобрать новые пароли?\nВведите Да или Нет:\n')
+            if finish_check.lower() == 'да':
+                break
+            elif finish_check.lower() == 'нет':
+                print('Ваш аккаунт теперь в безопасности!')
+                break
+            elif finish_check.lower() != 'да' and finish_check.lower() != 'нет':
+                print('Я Вас не понимаю. ВВЕДИТЕ ДА ИЛИ НЕТ!')
+                continue
+        if finish_check.lower() == 'нет':
+            break
+
+
+gener_password()
