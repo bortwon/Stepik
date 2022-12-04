@@ -1352,3 +1352,114 @@ l = input().split()
 print(*random.sample(l, 3))
 
 # ----------------------------------------------------------------------------------------------------------------------
+# Значимый подвиг 7. Имеется двумерное игровое поле размером N x N (N - натуральное число, вводится с клавиатуры),
+# представленное в виде вложенного списка:
+#
+# P = [[0] * N for i in range(N)]
+#
+# Требуется расставить в нем случайным образом M = 10 единиц (целочисленных) так, чтобы они не соприкасались друг с
+# другом (то есть, вокруг каждой единицы должны быть нули, либо граница поля).
+#
+# P.S. Поле на экран выводить не нужно (вообще ничего не нужно выводить), только сформировать.
+#
+# Sample Input:
+# 10
+
+# Sample Output:
+# True
+
+# V1 good var------
+import random
+
+random.seed(1)
+
+N = int(input())
+P = [[0] * N for i in range(N)]
+
+for _ in range(10):
+    while True:
+        r, c = random.randint(0, N - 1), random.randint(0, N - 1)
+        if not sum(P[i][y] for i in range(max(0, r - 1), min(r + 2, N))
+                           for y in range(max(0, c - 1), min(c + 2, N))):
+            P[r][c] = 1
+            break
+
+
+# V2 DIRTy-------
+import random
+# установка "зерна" датчика случайных чисел, чтобы получались одни и те же случайные величины
+random.seed(1)
+# начальная инициализация поля (переменные P и N не менять, единицы записывать в список P)
+N = int(input())
+P = [[0] * N for i in range(N)]
+
+# здесь продолжайте программу
+
+
+def isol(mtx, row, index, n):
+    if row == 0:
+        if index == 0:
+            if sum([mtx[i][j] for j in range(index, index + 2) for i in range(row, row + 2)]) >= 1:
+                return False
+            else:
+                return True
+        if index == n - 1:
+            if sum([mtx[i][j] for j in range(index - 1, index + 1) for i in range(row, row + 2)]) >= 1:
+                return False
+            else:
+                return True
+        else:
+            if sum([mtx[i][j] for j in range(index - 1, index + 2) for i in range(row - 1, row + 2)]) >= 1:
+                return False
+            else:
+                return True
+
+    elif row == n - 1:
+        if index == 0:
+            if sum([mtx[i][j] for j in range(index, index + 2) for i in range(row - 1, row + 1)]) >= 1:
+                return False
+            else:
+                return True
+        elif index == n - 1:
+            if sum([mtx[i][j] for j in range(index - 1, index + 1) for i in range(row - 1, row + 1)]) >= 1:
+                return False
+            else:
+                return True
+        else:
+            if sum([mtx[i][j] for j in range(index - 1, index + 2) for i in range(row - 1, row + 1)]) >= 1:
+                return False
+            else:
+                return True
+
+    else:
+        if index == 0:
+            if sum([mtx[i][j] for j in range(index, index + 2) for i in range(row - 1, row + 2)]) >= 1:
+                return False
+            else:
+                return True
+        elif index == n - 1:
+            if sum([mtx[i][j] for j in range(index - 1, index + 1) for i in range(row - 1, row + 2)]) >= 1:
+                return False
+            else:
+                return True
+        else:
+            if sum([mtx[i][j] for j in range(index - 1, index + 2) for i in range(row - 1, row + 2)]) >= 1:
+                return False
+            else:
+                return True
+
+def check(mtx, N):
+    res = 0
+    while res != 10:
+        ex2 = random.randint(0, N - 1)
+        row2 = random.randint(0, N - 1)
+        if isol(mtx, row2, ex2, N):
+            mtx[row2][ex2] = 1
+            res += 1
+
+
+check(P, N)
+for i in P:
+    print(*i)
+
+# ----------------------------------------------------------------------------------------------------------------------
