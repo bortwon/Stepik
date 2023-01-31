@@ -6228,7 +6228,43 @@ class Stack:
 #
 # P.S. В программе достаточно только объявить классы. На экран ничего выводить не нужно.
 
-# TODO here
+class Book:
+
+    def __init__(self, title, author, year):
+        self.title = title
+        self.author = author
+        self.year = year
+
+
+class Lib:
+
+    def __init__(self):
+        self.book_list = []
+
+    def __add__(self, other):
+        if isinstance(other, Book):
+            self.book_list.append(other)
+        return self
+
+    def __iadd__(self, other):
+        if isinstance(other, Book):
+            self.book_list.append(other)
+        return self
+
+    def __sub__(self, other):
+        if isinstance(other, Book):
+            self.book_list.remove(other)
+        elif type(other) == int:
+            del self.book_list[other]
+
+    def __isub__(self, other):
+        if isinstance(other, Book):
+            self.book_list.remove(other)
+        elif type(other) == int:
+            del self.book_list[other]
+
+    def __abs__(self):
+        return len(self.book_list)
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -6277,8 +6313,35 @@ class Stack:
 #     s = s + x
 # P.S. В программе требуется только объявить класс. На экран ничего выводить не нужно.
 
+class Item:
 
-# TODO here
+    def __init__(self, name, money):
+        self.name = name
+        self.money = money
+
+    def __add__(self, other):
+        if isinstance(other, Item):
+            self.money += other.money
+
+    def __radd__(self, other):
+        return self.money + other
+
+
+class Budget:
+
+    def __init__(self):
+        self.__items = []
+
+    def add_item(self, it):
+        if isinstance(it, Item):
+            self.__items.append(it)
+        return self
+
+    def remove_item(self, indx):
+        del self.__items[indx]
+
+    def get_items(self):
+        return self.__items
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Подвиг 9. Объявите класс Box3D для представления прямоугольного параллелепипеда (бруска), объекты которого создаются
@@ -6309,7 +6372,43 @@ class Stack:
 
 
 
-# TODO here
+class Box3D:
+
+    def __init__(self, width, height, depth):
+        self.width = width
+        self.height = height
+        self.depth = depth
+
+    def __add__(self, other):
+        if isinstance(other, Box3D):
+            width = self.width + other.width
+            height = self.height + other.height
+            dept = self.depth + other.depth
+            return Box3D(width, height, dept)
+
+    def __mul__(self, other):
+        if isinstance(other, int):
+            return Box3D(self.width * other, self.height * other, self.depth * other)
+
+    def __rmul__(self, other):
+        if isinstance(other, int):
+            return Box3D(self.width * other, self.height * other, self.depth * other)
+
+    def __sub__(self, other):
+        if isinstance(other, Box3D):
+            width = self.width - other.width
+            height = self.height - other.height
+            dept = self.depth - other.depth
+            return Box3D(width, height, dept)
+
+    def __floordiv__(self, other):
+        if isinstance(other, int):
+            return Box3D(self.width // other, self.height // other, self.depth // other)
+
+    def __mod__(self, other):
+        if isinstance(other, int):
+            return Box3D(self.width % other, self.height % other, self.depth % other)
+
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -6353,7 +6452,19 @@ class Stack:
 #
 # P.S. В программе достаточно объявить только класс. Выводить на экран ничего не нужно.
 
+class MaxPooling:
 
+    def __init__(self, step = (2, 2), size = (2, 2)):
+        self.step = step
+        self.size = size
+
+    def __call__(self, matrix, *args, **kwargs):
+
+
+    def check_value(self, val):
+        if not isinstance(val, int):
+            raise ValueError('Неверный формат для первого параметра matrix.')
+        return True
 # TODO here
 
 
