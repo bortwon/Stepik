@@ -6228,43 +6228,34 @@ class Stack:
 #
 # P.S. В программе достаточно только объявить классы. На экран ничего выводить не нужно.
 
-class Book:
+class Lib:
+    def __init__(self):
+        self.book_list = []
 
+    def __len__(self):
+        return len(self.book_list)
+
+    def __add__(self, other):
+        if not isinstance(other, Book):
+            raise TypeError('Операнд справа должен быть экземпляром класса Book')
+        self.book_list.append(other)
+        return self
+
+    def __sub__(self, other):
+        if not isinstance(other, (int, Book)):
+            raise TypeError('Операнд справа должен быть int или экземпляром класса Book')
+        if isinstance(other, Book):
+            self.book_list.remove(other)
+        else:
+            if other < len(self.book_list):
+                del self.book_list[other]
+        return self
+
+class Book:
     def __init__(self, title, author, year):
         self.title = title
         self.author = author
         self.year = year
-
-
-class Lib:
-
-    def __init__(self):
-        self.book_list = []
-
-    def __add__(self, other):
-        if isinstance(other, Book):
-            self.book_list.append(other)
-        return self
-
-    def __iadd__(self, other):
-        if isinstance(other, Book):
-            self.book_list.append(other)
-        return self
-
-    def __sub__(self, other):
-        if isinstance(other, Book):
-            self.book_list.remove(other)
-        elif type(other) == int:
-            del self.book_list[other]
-
-    def __isub__(self, other):
-        if isinstance(other, Book):
-            self.book_list.remove(other)
-        elif type(other) == int:
-            del self.book_list[other]
-
-    def __abs__(self):
-        return len(self.book_list)
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -6314,34 +6305,33 @@ class Lib:
 # P.S. В программе требуется только объявить класс. На экран ничего выводить не нужно.
 
 class Item:
-
     def __init__(self, name, money):
         self.name = name
         self.money = money
 
-    def __add__(self, other):
-        if isinstance(other, Item):
-            self.money += other.money
+    def __add__(self, it):
+        if isinstance(it, Item):
+            return self.money + it.money
+        if isinstance(it, (float, int)):
+            return self.money + it
 
-    def __radd__(self, other):
-        return self.money + other
-
+    def __radd__(self, it):
+        return self + it
 
 class Budget:
-
     def __init__(self):
-        self.__items = []
+        self.items = list()
 
     def add_item(self, it):
         if isinstance(it, Item):
-            self.__items.append(it)
-        return self
+            self.items.append(it)
 
     def remove_item(self, indx):
-        del self.__items[indx]
+        if indx < len(self.items):
+            del self.items[indx]
 
     def get_items(self):
-        return self.__items
+        return self.items
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Подвиг 9. Объявите класс Box3D для представления прямоугольного параллелепипеда (бруска), объекты которого создаются
@@ -6455,17 +6445,34 @@ class Box3D:
 class MaxPooling:
 
     def __init__(self, step = (2, 2), size = (2, 2)):
-        self.step = step
-        self.size = size
+        self.__step = step
+        self.__size = size
 
-    def __call__(self, matrix, *args, **kwargs):
+    def __call__(self, matrix):
+        rows = len(matrix)
+        cols = len(matrix[0]) if rows > 0 else 0
 
+        if rows == 0:
+            return [[]]
 
-    def check_value(self, val):
-        if not isinstance(val, int):
-            raise ValueError('Неверный формат для первого параметра matrix.')
-        return True
-# TODO here
+        if not all(map(lambda x: len(x) == cols, matrix)) or \
+                not all(map(lambda row: all(map(lambda x: type(x) in (int, float), row)), matrix)):
+            raise ValueError("Неверный формат для параметра matrix")
+        h, w = self.__size[0], self.__size[1]
+        sh, sw = self.__step[0], self.__step[1]
+
+        rows_range = (rows - h) // sh + 1
+        cols_range = (cols - w) // sw + 1
+
+        res = [[0] * cols_range for _ in range(rows_range)]
+
+        for i in range(rows_range):
+            for j in range(cols_range):
+                s = (x for r in matrix[i * sh : i * sh + h] for x in r[j * sw : j * sw + w])
+                res[i][j] = max(s)
+
+        return res
+
 
 
 # ----------------------------------------------------------------------------------------------------------------------
