@@ -6480,153 +6480,17 @@ class MaxPooling:
 # ======================================================================================================================
 # 3.5 Сравнения __eq__, __ne__, __lt__, __gt__ и другие
 # ======================================================================================================================
-# На этом занятии мы будем рассматривать магические методы для реализации операторов сравнения:
-#
-# __eq__() – для равенства ==
-# __ne__() – для неравенства !=
-# __lt__() – для оператора меньше <
-# __le__() – для оператора меньше или равно <=
-# __gt__() – для оператора больше >
-# __ge__() – для оператора больше или равно >=
-# Рассматривать работу этих методов мы будем на примере нашего класса Clock, который использовали на предыдущем занятии:
-#
-class Clock:
-    __DAY = 86400   # число секунд в одном дне
-
-    def __init__(self, seconds: int):
-        if not isinstance(seconds, int):
-            raise TypeError("Секунды должны быть целым числом")
-        self.seconds = seconds % self.__DAY
-
-    def get_time(self):
-        s = self.seconds % 60            # секунды
-        m = (self.seconds // 60) % 60    # минуты
-        h = (self.seconds // 3600) % 24  # часы
-        return f"{self.__get_formatted(h)}:{self.__get_formatted(m)}:{self.__get_formatted(s)}"
-
-    @classmethod
-    def __get_formatted(cls, x):
-        return str(x).rjust(2, "0")
-# Изначально для класса реализован только один метод сравнения на равенство, например:
-#
-c1 = Clock(1000)
-c2 = Clock(1000)
-print(c1 == c2)
-# Но здесь объекты сравниваются по их id (адресу в памяти), а мы бы хотели, чтобы сравнивались секунды в каждом из
-# объектов c1 и c2. Для этого переопределим магический метод __eq__(), следующим образом:
-#
-    def __eq__(self, other):
-        if not isinstance(other, (int, Clock)):
-            raise TypeError("Операнд справа должен иметь тип int или Clock")
-
-        sc = other if isinstance(other, int) else other.seconds
-        return self.seconds == sc
-# Теперь, после запуска программы видим значение True, т.к. объекты содержат одинаковое время. Кроме того, мы можем
-# совершенно спокойно выполнять проверку и на неравенство:
-#
-print(c1 != c2)
-# Смотрите, если интерпретатор языка Python не находит определение метода ==, то он пытается выполнить противоположное
-# сравнение с последующей инверсией результата. То есть, в данном случае находится оператор == и выполняется инверсия:
-#
-# not (a == b)
-#
-# Давайте в этом убедимся, поставим точку останова в метод __eq__ и запустим программу. Как видите, он срабатывает и
-# результат в последствии меняется на противоположный.
-#
-# Отлично, на равенство и неравенство мы теперь можем сравнивать объекты класса Clock, а также с целыми числами.
-# Однако, сравнение на больше или меньше пока не работает. Строчка программы:
-#
-print(c1 < c2)
-# приведет к ошибке. Добавим эту операцию сравнения:
-#
-    def __lt__(self, other):
-        if not isinstance(other, (int, Clock)):
-            raise TypeError("Операнд справа должен иметь тип int или Clock")
-
-        sc = other if isinstance(other, int) else other.seconds
-        return self.seconds < sc
-# Как видите, у нас здесь получается дублирование кода. Поэтому, я вынесу общее для методов сравнения в отдельный
-# метода класса:
-#
-    @classmethod
-    def __verify_data(cls, other):
-        if not isinstance(other, (int, Clock)):
-            raise TypeError("Операнд справа должен иметь тип int или Clock")
-
-        return other if isinstance(other, int) else other.seconds
-# А сами методы примут вид:
-#
-    def __eq__(self, other):
-        sc = self.__verify_data(other)
-        return self.seconds == sc
-
-    def __lt__(self, other):
-        sc = self.__verify_data(other)
-        return self.seconds < sc
-# Итак, мы определили сравнение на равенство и меньше. Теперь, можно сравнивать объекты класса Clock на эти операции
-# и дополнительно на неравенство и больше. Сейчас команда:
-#
-c1 = Clock(1000)
-c2 = Clock(2000)
-print(c1 < c2)
-# Выдаст True, так как первое время меньше второго. И также мы можем совершенно спокойно делать проверку на больше:
-#
-print(c1 > c2)
-# Здесь сработает тот же метод меньше, но для объекта c2:
-#
-# c2 < c1
-#
-# То есть, в отличие от оператора ==, где применяется инверсия, здесь меняется порядок операндов. Разумеется, если
-# в классе определен метод больше:
-#
-    def __gt__(self, other):
-        sc = self.__verify_data(other)
-        return self.seconds > sc
-# то он будет найден и выполнен. Подмена происходит только в случае отсутствия соответствующего магического метода.
-#
-# И то же самое для методов сравнения на меньше или равно и больше или равно:
-
-    def __le__(self, other):
-        sc = self.__verify_data(other)
-        return self.seconds <= sc
-# Если мы его вызовем непосредственно для объектов класса:
-#
-print(c1 <= c2)
-# то он сработает и результат отобразится в консоли. Но, если пропишем обратное сравнение:
-#
-print(c1 >= c2)
-# то просто изменится порядок операндов и будет взято все то же сравнение меньше или равно.
-#
-# То есть, для определения операций сравнения достаточно в классе определить только три метода: ==, <, <=, если
-# остальные являются их симметричной противоположностью. В этом случае язык Python сам подберет нужный метод и
-# выполнит его при сравнении объектов.
-#
-# Я, думаю, теперь вы хорошо себе представляете, как можно реализовывать операции сравнения для объектов класса.
-
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Подвиг 1. Установите соответствия между магическими методами и операторами.
 
-# __eq__()
-# __ne__()
-# __lt__()
-# __le__()
-# __gt__()
-# __ge__()
+# __eq__() - оператор равенства ==
+# __ne__() - оператор неравенства !=
+# __lt__() - оператор меньше <
+# __le__() - оператор меньше или равно <=
+# __gt__() - оператор больше >
+# __ge__() - оператор больше или равно >=
 
-# оператор меньше <
-#
-# оператор меньше или равно <=
-#
-# оператор больше >
-#
-# оператор больше или равно >=
-#
-# оператор неравенства !=
-#
-# оператор равенства ==
-
-# TODO here
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Подвиг 2. Пусть в программе объявлен следующий класс:
@@ -6645,15 +6509,9 @@ print(c1 >= c2)
 # Для каких операций сравнения будет вызван магический метод __eq__() класса Vector?
 
 
-# v1 <= v2
-#
-# v1 == v2
-#
-# v1 >= v2
-#
-# v1 != v2
+# - v1 == v2
+# - v1 != v2
 
-# TODO here
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Видео-разбор подвига (решение смотреть только после своей попытки): https://youtu.be/cHV-yuNFavg
@@ -6693,8 +6551,68 @@ print(c1 >= c2)
 # P.S. На экран в программе ничего выводить не нужно.
 
 
-# TODO here
+class Track:
 
+    def __init__(self, start_x, start_y):
+        self._start_x = start_x
+        self._start_y = start_y
+        self._tracks = []
+
+    def add_track(self, tr):
+        self._tracks.append(tr)
+
+    def get_tracks(self):
+        return tuple(self._tracks)
+
+    def __get_length(self, i):
+        return ((self._tracks[i - 1].x - self._tracks[i].x) ** 2 + (self._tracks[i - 1].y - self._tracks[i].y) ** 2) ** 0.5
+
+
+    def __len__(self):
+        len_1 = ((self._start_x - self._tracks[0].x) ** 2 + (self._start_y - self._tracks[0].y) ** 2) ** 0.5
+        return int(len_1 + sum(self.__get_length(i) for i in range(1, len(self._tracks))))
+
+    def __eq__(self, other):
+        return len(self) == len(other)
+
+    def __lt__(self, other):
+        return len(self) < len(other)
+
+
+
+
+
+
+class TrackLine:
+
+    def __init__(self, to_x, to_y, max_speed):
+        self._to_x = to_x
+        self._to_y = to_y
+        self._max_speed = max_speed
+
+    @property
+    def x(self):
+        return self._to_x
+
+    @property
+    def y(self):
+        return self._to_y
+
+    @property
+    def max_speed(self):
+        return self._max_speed
+
+
+track1 = Track(0, 0)
+track2 = Track(0, 1)
+
+track1.add_track(TrackLine(2, 4, 100))
+track1.add_track(TrackLine(5, -4, 100))
+
+track2.add_track(TrackLine(3, 2, 90))
+track2.add_track(TrackLine(10, 8, 90))
+
+res_eq = track1 == track2
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Подвиг 4. Объявите класс Dimensions (габариты) с атрибутами:
@@ -6743,7 +6661,74 @@ print(c1 >= c2)
 # P.S. На экран в программе ничего выводить не нужно.
 
 
-# TODO here
+class Dimensions:
+    MIN_DIMENSION = 10
+    MAX_DIMENSION = 10000
+
+    def __init__(self, params):
+        self.__a, self.__b, self.__c = params
+
+    # Getters
+
+    @property
+    def a(self):
+        return self.__a
+
+    @property
+    def b(self):
+        return self.__b
+
+    @property
+    def c(self):
+        return self.__c
+
+    # Setters
+    @a.setter
+    def a(self, a):
+        if self.check_value(a):
+            self.__a = a
+
+    @b.setter
+    def b(self, b):
+        if self.check_value(b):
+            self.__b = b
+
+    @c.setter
+    def c(self, c):
+        if self.check_value(c):
+            self.__c = c
+
+    def check_value(self, val):
+        return True if self.MIN_DIMENSION <= val <= self.MAX_DIMENSION else False
+
+    def give_popuzyana(self): #TODO дать название функции (вычисление объёма)
+        return self.a * self.b * self.c
+
+    def __ge__(self, other):
+        return self.give_popuzyana() >= other.give_popuzyana()
+
+    def __le__(self, other):
+        return self.give_popuzyana() <= other.give_popuzyana()
+
+    def __gt__(self, other):
+        return self.give_popuzyana() > other.give_popuzyana()
+
+    def __lt__(self, other):
+        return self.give_popuzyana() < other.give_popuzyana()
+
+
+class ShopItem:
+
+    def __init__(self, name, price, dim):
+        self.name = name
+        self.price = price
+        self.dim = Dimensions(dim)
+
+lst_shop = [ShopItem('кеды', 1024, (40, 30, 120)), ShopItem('зонт', 500.24, (10, 20, 50)),
+            ShopItem('холодильник', 40000, (2000, 600, 500)), ShopItem('табуретка', 2000.99, (500, 200, 200))]
+
+lst_shop_sorted = sorted(lst_shop, key=lambda x: x.dim.give_popuzyana())
+print({x.name: x.dim.give_popuzyana() for x in lst_shop_sorted})
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Видео-разбор подвига (решение смотреть только после своей попытки): https://youtu.be/k7PSxUf0w6g
