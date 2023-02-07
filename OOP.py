@@ -6839,7 +6839,49 @@ stich = ["Я к вам пишу – чего же боле?",
 
 
 # здесь продолжайте программу
-# TODO here
+
+class RemoveChars:
+
+    def __init__(self, chars):
+        self.chars = chars
+
+    def __call__(self, arg, *args, **kwargs):
+        if isinstance(arg, str):
+            for char in self.chars:
+                arg = arg.replace(char, '')
+
+            return arg.split()
+
+
+class StringText:
+
+    def __init__(self, lst):
+        self.lst = lst
+
+    def __eq__(self, other):
+        if isinstance(other, StringText):
+            return len(self) == len(other)
+        raise AttributeError
+
+    def __gt__(self, other):
+        if isinstance(other, StringText):
+            return len(self) > len(other)
+        raise AttributeError
+
+    def __ge__(self, other):
+        if isinstance(other, StringText):
+            return len(self) >= len(other)
+        raise AttributeError
+
+    def __len__(self):
+        return len(self.lst)
+
+
+parce = RemoveChars("-?!,.;")
+lst_text = [StringText(parce(sentence)) for sentence in stich]
+lst_text_sorted = sorted(lst_text, reverse=True)
+lst_text_sorted = [' '.join(i.lst) for i in lst_text_sorted]
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Видео-разбор подвига (решение смотреть только после своей попытки): https://youtu.be/PJsJOIxZOdM
@@ -6895,14 +6937,47 @@ stich = ["Я к вам пишу – чего же боле?",
 # 2
 
 
-# здесь объявляйте класс
+class Morph:
+
+    def __init__(self, *args):
+        self.words = []
+        if args:
+            self.words = [word.lower() for word in args]
+
+    def add_word(self, word):
+        if word not in self.words:
+            self.words.append(word.lower())
+        return
+
+    def get_words(self):
+        return tuple(self.words)
+
+    def __eq__(self, other):
+        if isinstance(other, str):
+            return other.lower() in self.get_words()
+
+    def __ne__(self, other):
+        if isinstance(other, str):
+            return other.lower() not in self.get_words()
 
 
-text = input()   # эту строчку не менять
+s = """- связь, связи, связью, связи, связей, связям, связями, связях
+- формула, формулы, формуле, формулу, формулой, формул, формулам, формулами, формулах
+- вектор, вектора, вектору, вектором, векторе, векторы, векторов, векторам, векторами, векторах
+- эффект, эффекта, эффекту, эффектом, эффекте, эффекты, эффектов, эффектам, эффектами, эффектах
+- день, дня, дню, днем, дне, дни, дням, днями, днях
+"""
 
-# здесь создавайте объекты класса и обрабатывайте строку text
+dict_words = [Morph(*line.lstrip('- ').split(', ')) for line in s.splitlines()]
 
-# TODO here
+text = input()
+
+res = 0
+for i in text.split():
+    if i.lower().replace('.', '') in dict_words:
+        res += 1
+
+print(res)
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -6938,7 +7013,35 @@ text = input()   # эту строчку не менять
 # P.S. На экран в программе ничего выводить не нужно.
 
 
-# TODO here
+class FileAcceptor:
+
+    def __init__(self, *args):
+        self.exts = []
+        if args:
+            self.exts = list(args)
+
+    def __call__(self, filename, *args, **kwargs):
+        return filename[filename.rfind('.') + 1:] in self.exts
+
+    def __add__(self, other):
+        if isinstance(other, FileAcceptor):
+            return FileAcceptor(*set(self.exts + other.exts))
+
+
+# acceptor1 = FileAcceptor("jpg", "jpeg", "png")
+# acceptor2 = FileAcceptor("png", "bmp")
+# acceptor12 = acceptor1 + acceptor2    # ("jpg", "jpeg", "png", "bmp")
+#
+# filenames = ["boat.jpg", "ans.web.png", "text.txt", "www.python.doc", "my.ava.jpg",
+# "forest.jpeg", "eq_1.png", "eq_2.xls"]
+#
+# acceptor_images = FileAcceptor("jpg", "jpeg", "png")
+# acceptor_docs = FileAcceptor("txt", "doc", "xls")
+# res = acceptor_images + acceptor_docs
+# print(res.exts)
+# filenames = list(filter(acceptor_images + acceptor_docs, filenames))
+#
+# print(filenames)
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -7013,7 +7116,225 @@ text = input()   # эту строчку не менять
 # P.S. В программе на экран ничего выводить не нужно, только объявить классы.
 
 
-# TODO here
+class MoneyR:
+
+    def __init__(self, volume=0, cb=None):
+        self.name = 'rub'
+        self.__volume = volume
+        self.__cb = cb
+
+    @property
+    def cb(self):
+        return self.__cb
+
+    @cb.setter
+    def cb(self, cb):
+        self.__cb = cb
+
+    @property
+    def volume(self):
+        return self.__volume
+
+    @volume.setter
+    def volume(self, volume):
+        self.__volume = volume
+
+    def __lt__(self, other):
+        if self.cb is not None or other.cb is not None:
+            return self.volume / self.cb.rates[self.name] < other.volume / other.cb.rates[other.name]
+        raise ValueError("Неизвестен курс валют.")
+
+    def __gt__(self, other):
+        if self.cb is not None or other.cb is not None:
+            return self.volume / self.cb.rates[self.name] > other.volume / other.cb.rates[other.name]
+        raise ValueError("Неизвестен курс валют.")
+
+    def __ge__(self, other):
+        if self.cb is not None or other.cb is not None:
+            return self.volume / self.cb.rates[self.name] >= other.volume / other.cb.rates[other.name]
+        raise ValueError("Неизвестен курс валют.")
+
+    def __eq__(self, other):
+        if self.cb is not None or other.cb is not None:
+            money1 = self.volume / self.cb.rates[self.name]
+            money2 = other.volume / other.cb.rates[self.name]
+            res = sorted([money1, money2])
+            return res[1] - res[0] <= 0.1
+        raise ValueError("Неизвестен курс валют.")
+
+
+class MoneyD:
+
+    def __init__(self, volume=0, cb=None):
+        self.name = 'dollar'
+        self.__volume = volume
+        self.__cb = cb
+
+    @property
+    def cb(self):
+        return self.__cb
+
+    @cb.setter
+    def cb(self, cb):
+        self.__cb = cb
+
+    @property
+    def volume(self):
+        return self.__volume
+
+    @volume.setter
+    def volume(self, volume):
+        self.__volume = volume
+
+    def __lt__(self, other):
+        if self.cb is not None or other.cb is not None:
+            return self.volume / self.cb.rates[self.name] < other.volume / other.cb.rates[other.name]
+        raise ValueError("Неизвестен курс валют.")
+
+    def __gt__(self, other):
+        if self.cb is not None or other.cb is not None:
+            return self.volume / self.cb.rates[self.name] > other.volume / other.cb.rates[other.name]
+        raise ValueError("Неизвестен курс валют.")
+
+    def __ge__(self, other):
+        if self.cb is not None or other.cb is not None:
+            return self.volume / self.cb.rates[self.name] >= other.volume / other.cb.rates[other.name]
+        raise ValueError("Неизвестен курс валют.")
+
+    def __eq__(self, other):
+        if self.cb is not None or other.cb is not None:
+            money1 = self.volume / self.cb.rates[self.name]
+            money2 = other.volume / other.cb.rates[self.name]
+            res = sorted([money1, money2])
+            return res[1] - res[0] <= 0.1
+        raise ValueError("Неизвестен курс валют.")
+
+
+class MoneyE:
+
+    def __init__(self, volume=0, cb=None):
+        self.name = 'euro'
+        self.__volume = volume
+        self.__cb = cb
+
+    @property
+    def cb(self):
+        return self.__cb
+
+    @cb.setter
+    def cb(self, cb):
+        self.__cb = cb
+
+    @property
+    def volume(self):
+        return self.__volume
+
+    @volume.setter
+    def volume(self, volume):
+        self.__volume = volume
+
+    def __lt__(self, other):
+        if self.cb is not None or other.cb is not None:
+            return self.volume / self.cb.rates[self.name] < other.volume / other.cb.rates[other.name]
+        raise ValueError("Неизвестен курс валют.")
+
+    def __gt__(self, other):
+        if self.cb is not None or other.cb is not None:
+            return self.volume / self.cb.rates[self.name] > other.volume / other.cb.rates[other.name]
+        raise ValueError("Неизвестен курс валют.")
+
+    def __ge__(self, other):
+        if self.cb is not None or other.cb is not None:
+            return self.volume / self.cb.rates[self.name] >= other.volume / other.cb.rates[other.name]
+        raise ValueError("Неизвестен курс валют.")
+
+    def __eq__(self, other):
+        if self.cb is not None or other.cb is not None:
+            money1 = self.volume / self.cb.rates[self.name]
+            money2 = other.volume / other.cb.rates[self.name]
+            res = sorted([money1, money2])
+            return res[1] - res[0] <= 0.1
+        raise ValueError("Неизвестен курс валют.")
+
+
+
+class CentralBank:
+
+    def __new__(cls, *args, **kwargs):
+        return None
+
+    rates = {'rub': 72.5, 'dollar': 1.0, 'euro': 1.15}
+
+    @classmethod
+    def register(cls, money):
+        money.cb = cls
+
+
+# Второй вариант с наследованием!!!!!
+
+class CentralBank:
+    rates = {'rub': 72.5, 'dollar': 1.0, 'euro': 1.15}
+
+    def __new__(cls):
+        return None
+
+    @classmethod
+    def register(cls, money):
+        if isinstance(money, Money):
+            money.cb = cls
+
+
+class Money:
+    def __init__(self, volume=0):
+        self.__cb = None
+        self.__volume = volume
+
+    def __eq__(self, other):
+        if isinstance(other, Money):
+            return self.valuate() == other.valuate()
+
+    def __lt__(self, other):
+        if isinstance(other, Money):
+            return self.valuate() < other.valuate()
+
+    def __le__(self, other):
+        if isinstance(other, Money):
+            return self.valuate() <= other.valuate()
+
+    @property
+    def cb(self):
+        return self.__cb
+
+    @cb.setter
+    def cb(self, value):
+        if value is CentralBank:
+            self.__cb = value
+
+    @property
+    def volume(self):
+        return self.__volume
+
+    @volume.setter
+    def volume(self, value):
+        if type(value) in (int, float):
+            self.__volume = value
+
+    def valuate(self):
+        if self.cb:
+            return round(self.volume / self.cb.rates[self.currency_name], 1)
+        raise ValueError("Неизвестен курс валют.")
+
+
+class MoneyR(Money):
+    currency_name = 'rub'
+
+
+class MoneyD(Money):
+    currency_name = 'dollar'
+
+
+class MoneyE(Money):
+    currency_name = 'euro'
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -7035,8 +7356,70 @@ text = input()   # эту строчку не менять
 #
 # P.S. В программе только объявить класс, выводить на экран ничего не нужно.
 
-# TODO here
+class Body:
 
+    def __init__(self, name, ro, volume):
+        self.name = name
+        self.ro = ro
+        self.volume = volume
+
+    def give_mass(self):
+        return self.ro * self.volume
+
+    def __gt__(self, other):
+        if isinstance(other, Body):
+            return self.give_mass() > other.give_mass()
+        if type(other) in (float, int):
+            return self.give_mass() > other
+
+    def __eq__(self, other):
+        if isinstance(other, Body):
+            return self.give_mass() == other.give_mass()
+        if type(other) in (float, int):
+            return self.give_mass() == other
+
+    def __lt__(self, other):
+        if isinstance(other, Body):
+            return self.give_mass() < other.give_mass()
+        if type(other) in (float, int):
+            return self.give_mass() < other
+
+
+# Второй вариант с замыканием
+
+def mass_arg(func):
+    def wrapper(instance, other, *args):
+        if isinstance(other, Body):
+            return func(instance, other.mass)
+        elif isinstance(other, (int, float)):
+            return func(instance, other)
+        else:
+            raise TypeError(f"Not supported type {type(other)} in {func}")
+
+    return wrapper
+
+
+class Body:
+    def __init__(self, name, ro, volume):
+        self.name = name
+        self.ro = ro
+        self.volume = volume
+
+    @property
+    def mass(self):
+        return (self.ro * self.volume)
+
+    @mass_arg
+    def __lt__(self, other):
+        return (self.mass < other)
+
+    @mass_arg
+    def __le__(self, other):
+        return self.mass <= other
+
+    @mass_arg
+    def __eq__(self, other):
+        return self.mass == other
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Подвиг 10. Объявите в программе класс с именем Box (ящик), объекты которого должны создаваться командой:
@@ -7080,7 +7463,62 @@ text = input()   # эту строчку не менять
 # res = b1 == b2 # True
 # P.S. В программе только объявить классы, выводить на экран ничего не нужно.
 
-# TODO here
+class Box:
+
+    def __init__(self):
+        self.box = []
+
+    def add_thing(self, obj):
+        self.box.append(obj)
+
+    def get_things(self):
+        return self.box
+
+    def __eq__(self, other):
+        if isinstance(other, Box):
+            return all([self.box.count(i) == other.box.count(i) for i in self.box])
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+
+
+class Thing:
+
+    def __init__(self, name, mass):
+        self.name = name
+        self.mass = mass
+
+    def __eq__(self, other):
+        if isinstance(other, Thing):
+            if self.name.lower() == other.name.lower() and self.mass == other.mass:
+                return True
+            else:
+                return False
+        return
+
+    def __ne__(self, other):
+        if isinstance(other, Thing):
+            if self.name.lower() != other.name.lower() or self.mass != other.mass:
+                return True
+            else:
+                return False
+        return
+
+
+# b1 = Box()
+# b2 = Box()
+#
+# b1.add_thing(Thing('мел', 100))
+# b1.add_thing(Thing('тряпка', 200))
+# b1.add_thing(Thing('доска', 2000))
+#
+# b2.add_thing(Thing('тряпка', 200))
+# b2.add_thing(Thing('мел', 100))
+# b2.add_thing(Thing('доска', 2000))
+#
+# res = b1 == b2 # True
+# print(res)
 
 
 # ----------------------------------------------------------------------------------------------------------------------
