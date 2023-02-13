@@ -8071,7 +8071,9 @@ class Triangle:
 # Отметьте все верные пункты выполнения функции bool().
 
 
-# -
+# - bool(user1) вернет значение True, так как будет вызван магический метод __len__(), который вернет не нулевое
+# значение
+# - bool(user2) вернет значение False, так как будет вызван магический метод __len__(), который вернет нулевое значение
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -8091,10 +8093,12 @@ class Triangle:
 #
 # user1 = User('Sergey', 45)
 # user2 = User('Петр', 0)
+
 # Отметьте все верные пункты, связанные с использованием функции bool().
 
 
-# -
+# - bool(user2) вернет значение False, так как будет вызван магический метод __bool__(), который вернет False
+# - bool(user1) вернет значение True, так как будет вызван магический метод __bool__(), который вернет True
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -8103,14 +8107,17 @@ class Triangle:
 # магического метода __bool__().
 
 
-# -
+# - res = bool(book)
+# - if book: ...
+# - while book: ...
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Подвиг 4. Объявите в программе класс Player (игрок), объекты которого создаются командой:
 #
 # player = Player(name, old, score)
-# где name - имя игрока (строка); old - возраст игрока (целое число); score - набранные очки в игре (целое число). В каждом объекте класса Player должны создаваться аналогичные локальные атрибуты: name, old, score.
+# где name - имя игрока (строка); old - возраст игрока (целое число); score - набранные очки в игре (целое число).
+# В каждом объекте класса Player должны создаваться аналогичные локальные атрибуты: name, old, score.
 #
 # С объектами класса Player должна работать функция:
 #
@@ -8148,7 +8155,25 @@ class Triangle:
 # Sample Output:
 
 
-# -
+import sys
+
+class Player:
+
+    def __init__(self, name, old, score):
+        self.name = name
+        self.old = float(old)
+        self.score = float(score)
+
+    def __bool__(self):
+        return self.score > 0
+
+
+lst_in = list(map(str.strip, sys.stdin.readlines()))
+
+lst = [[x.strip() for x in i.split(';')] for i in lst_in]
+players = [Player(*values) for values in lst]
+
+players_filtered = list(filter(lambda x: bool(x), players))
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -8211,7 +8236,41 @@ class Triangle:
 # Sample Output:
 
 
-# -
+import sys
+
+class MailBox:
+
+    def __init__(self):
+        self.inbox_list = []
+
+    def receive(self):
+        lst_in = list(map(str.strip, sys.stdin.readlines()))
+        lst = [[i.strip() for i in x.split(';')] for x in lst_in]
+        lst_in = [MailItem(*args) for args in lst]
+        self.inbox_list.extend(lst_in)
+        return
+
+
+class MailItem:
+
+    def __init__(self, mail_from, title, content):
+        self.mail_from = mail_from
+        self.title = title
+        self.content = content
+        self.is_read = False
+
+    def set_read(self, fl_read):
+        self.is_read = fl_read
+
+    def __bool__(self):
+        return self.is_read
+
+mail = MailBox()
+mail.receive()
+mail.inbox_list[0].set_read(True)
+mail.inbox_list[-1].set_read(True)
+inbox_list_filtered = list(filter(bool, mail.inbox_list))
+
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -8229,7 +8288,19 @@ class Triangle:
 # P.S. На экран ничего выводить не нужно. Только объявить класс.
 
 
-# -
+class Line:
+
+    def __init__(self, x1, y1, x2, y2):
+        self.x1 = x1
+        self.y1 = y1
+        self.x2 = x2
+        self.y2 = y2
+
+    def __len__(self):
+        return int(((self.x2 - self.x1) ** 2 + (self.y2 - self.y1) ** 2) ** 0.5)
+
+    def __bool__(self):
+        return len(self) >= 1
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -8264,7 +8335,29 @@ class Triangle:
 # P.S. На экран ничего выводить не нужно.
 
 
-# -
+class Ellipse:
+
+    def __init__(self, *args):
+        self.args = args
+        if len(args) != 0:
+            self.x1, self.y1, self.x2, self.y2 = args
+
+    def __bool__(self):
+        if self.args:
+            return True
+        return False
+
+    def get_coords(self):
+        if not bool(self):
+            raise AttributeError('нет координат для извлечения')
+        return (self.x1, self.y1, self.x2, self.y2)
+
+
+lst_geom = [Ellipse(), Ellipse(), Ellipse(1, 2, 3, 4), Ellipse(4, 3, 2, 1)]
+
+for i in lst_geom:
+    if i:
+        i.get_coords()
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -8274,14 +8367,18 @@ class Triangle:
 # полем. Будем полагать, что оно имеет размеры N x M клеток. Каждая клетка будет представлена объектом класса Cell и
 # содержать либо число мин вокруг этой клетки, либо саму мину.
 
-# Для начала в программе объявите класс GamePole, который будет создавать и управлять игровым полем. Объект этого класса должен формироваться командой:
+# Для начала в программе объявите класс GamePole, который будет создавать и управлять игровым полем. Объект этого
+# класса должен формироваться командой:
 #
 # pole = GamePole(N, M, total_mines)
-# И, так как поле в игре одно, то нужно контролировать создание только одного объекта класса GamePole (используйте паттерн Singleton, о котором мы с вами говорили, когда рассматривали магический метод __new__()).
+# И, так как поле в игре одно, то нужно контролировать создание только одного объекта класса
+# GamePole (используйте паттерн Singleton, о котором мы с вами говорили, когда рассматривали
+# магический метод __new__()).
 #
 # Объект pole должен иметь локальный приватный атрибут:
 #
-# __pole_cells - двумерный (вложенный) кортеж, размерами N x M элементов (N строк и M столбцов), состоящий из объектов класса Cell.
+# __pole_cells - двумерный (вложенный) кортеж, размерами N x M элементов (N строк и M столбцов), состоящий из объектов
+# класса Cell.
 #
 # Для доступа к этой коллекции объявите в классе GamePole объект-свойство (property):
 #
@@ -8340,7 +8437,98 @@ class Triangle:
 # P.S. В программе на экран выводить ничего не нужно, только объявить классы.
 
 
-# -
+from random import randint
+class Cell:
+    def __init__(self):
+        self.__is_mine = False
+        self.__number = 0
+        self.__is_open = False
+
+    def __check_value(self, val):
+        if type(val) == bool:
+            return val
+        elif 0 <= val <= 8:
+            return val
+        else:
+            raise ValueError("недопустимое значение атрибута")
+
+    @property
+    def is_mine(self):
+        return self.__is_mine
+
+    @is_mine.setter
+    def is_mine(self, val):
+        self.__check_value(val)
+        self.__is_mine = val
+
+    @property
+    def number(self):
+        return self.__number
+
+    @number.setter
+    def number(self, val):
+        self.__check_value(val)
+        self.__number = val
+
+    @property
+    def is_open(self):
+        return self.__is_open
+
+    @is_open.setter
+    def is_open(self, value):
+        self.__check_value(value)
+        self.__is_open = value
+
+    def __bool__(self):
+        return False if self.is_open else True
+
+
+
+class GamePole:
+    __instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls.__instance is None:
+            cls.__instance = super().__new__(cls)
+        return cls.__instance
+
+    def __init__(self, N, M, total_mines):
+        self.n = N
+        self.m = M
+        self.total_mines = total_mines
+        self.__pole_cells = [[Cell() for n in range(self.m)] for n in range(self.n)]
+
+    @property
+    def pole(self):
+        return self.__pole_cells
+
+    def init_pole(self):
+        m = 0
+        while m < self.total_mines:
+            i = randint(0, 8)
+            j = randint(0, 8)
+            if self.pole[i][j].is_mine:
+                continue
+            self.pole[i][j].is_mine = True
+            m += 1
+
+        indx = (-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)
+        for x in range(self.n):
+            for y in range(self.n):
+                if not self.pole[x][y].is_mine:
+                    mines = sum((self.pole[x+i][y+j].is_mine for i, j in indx if 0 <= x+i < self.n and 0 <= y+j < self.n))
+                    self.pole[x][y].number = mines
+
+
+    def show_pole(self):
+        for row in self.pole:
+            print(*map(lambda x: "#" if not x.is_open else x.number if not x.is_mine else "*", row))
+
+    def open_cell(self, i: int, j):
+        try:
+            self.pole[i][j].is_open = True
+        except:
+            raise IndexError('некорректные индексы i, j клетки игрового поля')
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -8372,7 +8560,51 @@ class Triangle:
 # P.S. В программе на экран выводить ничего не нужно, только объявить класс.
 
 
-# -
+import operator as op
+
+
+class Vector:
+    def __init__(self, *args):
+        self.coords = args
+
+    def __len__(self):
+        return len(self.coords)
+
+    def __do(self, other, f_name, new_object=True):
+        if isinstance(other, self.__class__) and len(other) == len(self):
+            new_coords = (f_name(a, b) for a, b in zip(self.coords, other.coords))
+        elif isinstance(other, (int, float)):
+            new_coords = (f_name(b, other) for b in self.coords)
+        else:
+            raise ArithmeticError('размерности векторов не совпадают')
+        if new_object:
+            return self.__class__(*new_coords, )
+        else:
+            self.coords = (*new_coords,)
+            return self
+
+    def __add__(self, other):
+        return self.__do(other, op.add)
+
+    def __sub__(self, other):
+        return self.__do(other, op.sub)
+
+    def __mul__(self, other):
+        return self.__do(other, op.mul)
+
+    def __iadd__(self, other):
+        return self.__do(other, op.add, False)
+
+    def __isub__(self, other):
+        return self.__do(other, op.sub, False)
+
+    def __imul__(self, other):
+        return self.__do(other, op.mul, False)
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.coords == other.coords
+        raise TypeError('Сравнение векторов не возможно!')
 
 
 # ----------------------------------------------------------------------------------------------------------------------
