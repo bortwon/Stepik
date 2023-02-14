@@ -9363,3 +9363,45 @@ class Thing:
 # val = st[2, 5] # ValueError
 # st.remove_data(12, 3) # IndexError
 # P.S. В программе нужно объявить только классы. Выводить на экран ничего не нужно.
+
+
+class SparseTable:
+
+    def __init__(self):
+        self.table = {}
+
+    @property
+    def rows(self):
+        return max(i[0] for i in self.table) + 1 if self.table else 0
+
+    @property
+    def cols(self):
+        return max(i[1] for i in self.table) + 1 if self.table else 0
+
+    def add_data(self, row, col, data):
+        self.table[row, col] = data
+
+    def remove_data(self, row, col):
+        if not(row, col) in self.table:
+            raise IndexError('ячейка с указанными индексами не существует')
+        del self.table[row, col]
+
+    def __getitem__(self, item):
+        if not item in self.table:
+            raise ValueError('данные по указанным индексам отсутствуют')
+        return self.table[item].value
+
+    def __setitem__(self, key, value):
+        self.table.setdefault(key, Cell(0)).value = value
+
+
+class Cell:
+
+    def __init__(self, value):
+        self.value = value
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+# ======================================================================================================================
