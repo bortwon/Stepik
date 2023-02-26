@@ -51,8 +51,138 @@
 # - Работаем с файлом - добавляем файл в индекс - коммитим изменения
 
 
+# ======= API =========
+
+# Как расшифровывается аббревиатура API в контексте данного курса?
+# - Application Programming Interface
 
 
 
+# Работа с API с помощью библиотеки requests
+
+# Я не буду сейчас подробно останавливаться на функциях и методах библиотеки requests, просто покажу, как можно
+# получать информацию с помощью GET-запросов. Давайте выясним где прямо сейчас находится Международная Космическая
+# Станция.
+
+import requests
+
+
+api_url = 'http://api.open-notify.org/iss-now.json'
+
+response = requests.get(api_url)   # Отправляем GET-запрос и сохраняем ответ в переменной response
+
+if response.status_code == 200:    # Если код ответа на запрос - 200, то смотрим, что пришло в ответе
+    print(response.text)
+else:
+    print(response.status_code)    # При другом коде ответа выводим этот код
+
+# Если все получилось, то вы должны увидеть в терминале сообщение вида:
+
+# {"message": "success", "iss_position": {"longitude": "7.6753", "latitude": "50.2226"}, "timestamp": 1668894374}
+ # "longitude" и "latitude" - это, соответственно, долгота и широта текущего положения МКС.
+
+# Код ответа 200 говорит об успешном выполнении запроса, соответственно, можно посмотреть, что содержится в
+# атрибуте text переменной response.
+
+
+# Получение точных координат
+
+import requests
+from pprint import pprint
+
+api_url = 'http://api.open-notify.org/iss-now.json'
+
+response = requests.get(api_url)
+
+if response.status_code == 200:
+    data = response.json()
+else:
+    pprint(response.status_code)
+
+print(data['iss_position']['longitude'])
+print(data['iss_position']['latitude'])
+
+
+# -----------------------
+
+# Сделайте запрос к API http://numbersapi.com/ для числа 43 и скопируйте в текстовое поле полный ответ от сервиса.
+# Примечание. Ответ не должен содержать в себе дополнительных символов (пробелов, переносов строки и т.п.) он должен
+# быть ровно таким, каким его прислал сервис.
+
+# - 43 is the maximum number of cars participating in a NASCAR race in the Cup Series or Nationwide Series.
+
+
+# ============= Telegram Bot API =================
+
+# Принцип взаимодействия мы с вами разобрали. С библиотекой requests немного познакомились. Давайте напишем простенькую
+# программу, которая будет проверять наличие апдейтов на серверах телеграм от пользователей нашего бота, и на каждый
+# апдейт будет отправлять в чат пользователю фразу: "Ура! Классный апдейт!". Вроде, и бессмысленно, а схема работы
+# уложится в голове лучше :) Можете, кстати, другую фразу написать, если вам эта не по душе :)
+
+import requests
+import time
+
+
+API_URL: str = 'https://api.telegram.org/bot'
+BOT_TOKEN: str = '5424991242:AAGwomxQz1p46bRi_2m3V7kvJlt5RjK9xr0'
+TEXT: str = 'Ура! Классный апдейт!'
+MAX_COUNTER: int = 100
+
+offset: int = -2
+counter: int = 0
+chat_id: int
+
+
+while counter < MAX_COUNTER:
+
+    print('attempt =', counter)  #Чтобы видеть в консоли, что код живет
+
+    updates = requests.get(f'{API_URL}{BOT_TOKEN}/getUpdates?offset={offset + 1}').json()
+
+    if updates['result']:
+        for result in updates['result']:
+            offset = result['update_id']
+            chat_id = result['message']['from']['id']
+            requests.get(f'{API_URL}{BOT_TOKEN}/sendMessage?chat_id={chat_id}&text={TEXT}')
+
+    time.sleep(1)
+    counter += 1
+
+
+# MAX_COUNTER - это количество итераций цикла, в котором мы получаем апдейты от сервера. Можете сделать любым, с
+# каким захотите поэкспериментировать.
+
+
+
+# Сформируйте и вставьте в поле ниже GET-запрос к Telegram Bot API, который отправит пользователю текстовое
+# сообщение "AMAZING!"
+# Уточнение. Вместо токена бота напишите <token>, вместо номера chat_id - <chat_id>
+#
+# Примечание. Ответ должен быть без кавычек, пробелов, переводов строки.
+
+# https://api.telegram.org/bot<token>/sendMessage?chat_id=<chat_id>&text=AMAZING!
+
+
+
+# Укажите правильно сформированные GET-запросы к Telegram Bot API
+
+# - https://api.telegram.org/bot<token>/getUpdates?offset=-1
+# - https://api.telegram.org/bot<token>/getMe
+
+
+
+
+# ========= LONG POLLING ===============
+
+# Выберите значения параметра timeout, с которыми сервер Telegram будет работать в режиме long polling
+# Пояснение. Запустите код из предыдущего шага с разными значениями параметра timeout, чтобы увидеть какие значения
+# как работают.
+
+#  100
+#  10
+#  20.63
+
+
+# =======
 
 
