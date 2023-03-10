@@ -612,3 +612,99 @@ if __name__ == '__main__':
 
 
 # ==========================================================================
+
+
+# ================== ФИЛЬТРЫ =========================================
+
+
+# TASK 1 ----------------------------------
+
+# Функция custom_filter()
+# Реализуйте функцию custom_filter(), которая на вход принимает список some_list, с любыми типами данных, находит
+# в этом списке целые числа, отбирает из них те, что делятся нацело на 7, суммирует их, а затем проверяет превышает
+# эта сумма 83 или нет. Если НЕ превышает - функция должна вернуть True, если превышает - False.
+#
+# Примечание. В тестирующую систему сдайте программу, содержащую только необходимую функцию custom_filter(), но не
+# код, вызывающий ее.
+#
+# Sample Input 1:
+#
+# some_list = [7, 14, 28, 32, 32, 56]
+#
+# print(custom_filter(some_list))
+
+# Sample Output 1:
+# False
+
+# Sample Input 2:
+# some_list = [7, 14, 28, 32, 32, '56']
+#
+# print(custom_filter(some_list))
+
+# Sample Output 2:
+# True
+
+
+def custom_filter(list):
+    return sum(filter(lambda x: type(x) == int and int(x) % 7 == 0, list)) <= 83
+# -------------------------------------------------
+
+
+# TASK 2 -----------------------------------------
+
+# Анонимная функция как фильтр
+# Напишите функцию anonimous_filter, используя синтаксис анонимных функций, которая принимает строковый аргумент и
+# возвращает значение True, если количество русских букв я не меньше 23 (регистр буквы неважен) и False в противном
+# случае.
+#
+# Примечание. Вызывать анонимную функцию не нужно. Только дописать ее код.
+#
+# Sample Input 1:
+#
+# print(anonimous_filter('Я - последняя буква в алфавите!'))
+
+# Sample Output 1:
+# False
+
+# Sample Input 2:
+#
+# print(anonimous_filter('яяяяяяяяяяяяяяяяяяяяяяяя, яяяяяяяяяяяяяяяя и яяяяяяяя тоже!'))
+
+# Sample Output 2:
+# True
+
+
+anonimous_filter = lambda x: x.lower().count('я') >= 23
+
+print(anonimous_filter('Я - последняя буква в алфавите!'))
+
+# -----------------------------------------------------------
+
+
+# Магические фильтры -------------
+
+# --------------
+# Сопоставьте магические фильтры фильтрам, записанным через анонимную функцию, с таким же функционалом:
+
+# F.text.endswith('Пока!') - lambda message: message.text.endswith('Пока!')
+# ~F.text.contains('@') - lambda message: not message.text.contains('@')
+# F.content_type == ContentType.VOICE - lambda message: message.content_type == ContentType.VOICE
+# F.photo - lambda message: message.photo
+# F.text.isdigit() - lambda message: message.text.isdigit()
+# ~F.content_type.in_({'video', 'video_note'}) - lambda message: not message.content_type in {'video', 'video_note'}
+# F.from_user.id == 173901673 - lambda message: message.from_user.id == 173901673
+# ~F.text.startswith('Привет') - lambda message: not message.text.startswith('Привет')
+# ----------------
+
+
+# ----------------------
+# Выберите правильно записанные фильтры из списка ниже, если нужно, чтобы хэндлер получил апдейт либо с типом контента
+# фото, либо с текстом, начинающимся на "Привет" и при этом от любого пользователя, кроме пользователя с ID = 173901673.
+
+# - (F.photo | F.text.startswith('Привет')) & ~(F.from_user.id == 173901673)
+# - and_f(invert_f(F.from_user.id == 173901673), or_f(F.content_type.in_({ContentType.PHOTO}), Text(startswith='Привет')))
+
+# ------------------------------
+
+
+# ===================================
