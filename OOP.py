@@ -12791,7 +12791,8 @@ class FileDialogFactory:
 #         self._house_marks.append(mark)
 #
 #     def __str__(self):
-#         return f"Студент {self._fio}: оценки на лекциях: {str(self._lect_marks)}; оценки за д/з: {str(self._house_marks)}"
+#         return f"Студент {self._fio}: оценки на лекциях: {str(self._lect_marks)}; оценки
+#         за д/з: {str(self._house_marks)}"
 #
 #
 # class Mentor:
@@ -13608,6 +13609,652 @@ class FishFood(Food):
     def __init__(self, name, weight, calories, fish):
         super().__init__(name, weight, calories)
         self._fish = fish
+
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+# ======================================================================================================================
+# 4.6 Множественное наследование
+# ======================================================================================================================
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Подвиг 1. Что называется множественным наследованием?
+
+# - это когда один дочерний класс непосредственно наследуется от нескольких базовых
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Подвиг 2. Имеется следующая программа, в которой объявлены три класса:
+#
+# class A:
+#     def __init__(self):
+#         print("A")
+#         super().__init__()
+#
+#
+# class B:
+#     def __init__(self):
+#         print("B")
+#         super().__init__()
+#
+#
+# class C(A, B):
+#     def __init__(self):
+#         print("C")
+#         super().__init__()
+# И создается экземпляр класса C:
+#
+# c = C()
+
+# В какой последовательности будут выведены буквы A, B, C в консоль (то есть, в какой последовательности будут вызваны
+# инициализаторы этих классов):
+
+
+# - C A B
+
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Подвиг 3. В программе объявлены три класса следующим образом:
+#
+# class A:
+#     def __init__(self, name, old):
+#         super().__init__()
+#         self.name = name
+#         self.old = old
+#
+#
+# class B:
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#
+#
+# class C(B, A):
+#     def __init__(self, name, old, weight, height):
+#         super().__init__(name, old)
+#         self.weight = weight
+#         self.height = height
+# И создается объект класса C:
+#
+# person = C("Balakirev", 33, 80, 185)
+
+# Выберите все верные утверждения, связанные с этой программой.
+
+
+# - программа выполнится успешно, будет создан объект person с набором указанных локальных атрибутов
+# - программа будет успешно выполняться вне зависимости от порядка наследования классов A и B в дочернем классе C
+
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Подвиг 4. С помощью множественного наследования удобно описывать принадлежность объектов к нескольким разным
+# группам. Выполним такой пример.
+
+
+# Определите в программе классы в соответствии с их иерархией, представленной на рисунке выше:
+#
+# Digit, Integer, Float, Positive, Negative
+#
+# Каждый объект этих классов должен создаваться однотипной командой вида:
+#
+# obj = Имя_класса(value)
+# где value - числовое значение. В каждом классе следует делать свою проверку на корректность значения value:
+#
+# - в классе Digit: value - любое число;
+# - в классе Integer: value - целое число;
+# - в классе Float: value - вещественное число;
+# - в классе Positive: value - положительное число;
+# - в классе Negative: value - отрицательное число.
+#
+# Если проверка не проходит, то генерируется исключение командой:
+#
+# raise TypeError('значение не соответствует типу объекта')
+# После этого объявите следующие дочерние классы:
+#
+# PrimeNumber - простые числа; наследуется от классов Integer и Positive;
+# FloatPositive - наследуется от классов Float и Positive.
+#
+# Создайте три объекта класса PrimeNumber и пять объектов класса FloatPositive с произвольными допустимыми для них
+# значениями. Сохраните все эти объекты в виде списка digits.
+#
+# Затем, используя функции isinstance() и filter(), сформируйте следующие списки из указанных объектов:
+#
+# lst_positive - все объекты, относящиеся к классу Positive;
+# lst_float - все объекты, относящиеся к классу Float.
+#
+# P.S. В программе требуется объявить только классы и создать списки. На экран выводить ничего не нужно.
+
+
+import random
+
+
+class Digit:
+
+    def __init__(self, val):
+        if type(val) not in (int, float):
+            raise TypeError('значение не соответствует типу объекта')
+        self.val = val
+
+
+class Integer(Digit):
+
+    def __init__(self, val):
+        super().__init__(val)
+        if type(self.val) != int:
+            raise TypeError('значение не соответствует типу объекта')
+
+
+class Float(Digit):
+
+    def __init__(self, val):
+        super().__init__(val)
+        if type(self.val) != float:
+            raise TypeError('значение не соответствует типу объекта')
+
+
+class Positive(Digit):
+
+    def __init__(self, val):
+        super().__init__(val)
+        if self.val < 0:
+            raise TypeError('значение не соответствует типу объекта')
+
+
+class Negative(Digit):
+
+    def __init__(self, val):
+        super().__init__(val)
+        if self.val >= 0:
+            raise TypeError('значение не соответствует типу объекта')
+
+
+class PrimeNumber(Integer, Positive):
+
+    def __init__(self, val):
+        super().__init__(val)
+
+
+class FloatPositive(Float, Positive):
+
+    def __init__(self, val):
+        super().__init__(val)
+
+
+digits = [*[PrimeNumber(i) for i in range(3)], *[FloatPositive(random.uniform(1, 5)) for i in range(5)]]
+
+lst_positive = filter(lambda x: isinstance(x, Positive), digits)
+lst_float = filter(lambda x: isinstance(x, Float), digits)
+
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Подвиг 5. В программе объявлены два класса:
+#
+# class ShopItem:
+#     ID_SHOP_ITEM = 0
+#
+#     def __init__(self):
+#         super().__init__()
+#         ShopItem.ID_SHOP_ITEM += 1
+#         self._id = ShopItem.ID_SHOP_ITEM
+#
+#     def get_pk(self):
+#         return self._id
+#
+#
+# class Book(ShopItem):
+#     def __init__(self, title, author, year):
+#         super().__init__()
+#         self._title = title
+#         self._author = author
+#         self._year = year
+# Затем, создается объект класса Book (книга) и отображается в консоль:
+#
+# book = Book("Python ООП", "Балакирев", 2022)
+# print(book)
+# В результате, на экране увидим что то вроде:
+#
+# <__main__.Book object at 0x0000015FBA4B3D00>
+#
+# Но нам требуется, чтобы здесь отображались локальные атрибуты объекта с их значениями в формате:
+#
+# <атрибут_1>: <значение_1>
+# <атрибут_2>: <значение_2>
+# ...
+# <атрибут_N>: <значение_N>
+#
+# Для этого вам дают задание разработать два класса:
+#
+# ShopGenericView - для отображения всех локальных атрибутов объектов любых дочерних классов (не только Book);
+# ShopUserView - для отображения всех локальных атрибутов, кроме атрибута _id, объектов любых дочерних классов (не
+# только Book).
+#
+# То есть, в этих классах нужно переопределить два магических метода: __str__() и __repr__().
+#
+# Пример использования классов (эти строчки в программе писать не нужно):
+#
+# class Book(ShopItem, ShopGenericView): ...
+# book = Book("Python ООП", "Балакирев", 2022)
+# print(book)
+# # на экране увидим строчки:
+# # _id: 1
+# # _title: Python ООП
+# # _author: Балакирев
+# # _year: 2022
+# Другой вариант использования классов:
+#
+# class Book(ShopItem, ShopUserView): ...
+# book = Book("Python ООП", "Балакирев", 2022)
+# print(book)
+# # на экране увидим строчки:
+# # _title: Python ООП
+# # _author: Балакирев
+# # _year: 2022
+# P.S. В программе требуется объявить только классы. На экран выводить ничего не нужно.
+
+
+class ShopItem:
+    ID_SHOP_ITEM = 0
+
+    def __init__(self):
+        super().__init__()
+        ShopItem.ID_SHOP_ITEM += 1
+        self._id = ShopItem.ID_SHOP_ITEM
+
+    def get_pk(self):
+        return self._id
+
+
+# здесь объявляйте классы ShopGenericView и ShopUserView
+class ShopGenericView:
+
+    def __str__(self):
+        res = list(f'{i[0]}: {i[1]}' for i in list(self.__dict__.items()))
+        return '\n'.join(res)
+
+
+class ShopUserView:
+
+    def __str__(self):
+        res = list(f'{i[0]}: {i[1]}' for i in list(self.__dict__.items()) if i[0] != '_id')
+        return '\n'.join(res)
+
+
+class Book(ShopItem):
+    def __init__(self, title, author, year):
+        super().__init__()
+        self._title = title
+        self._author = author
+        self._year = year
+
+
+
+# Второй вариант
+class ShopItem:
+    ID_SHOP_ITEM = 0
+
+    def __init__(self):
+        super().__init__()
+        ShopItem.ID_SHOP_ITEM += 1
+        self._id = ShopItem.ID_SHOP_ITEM
+
+    def get_pk(self):
+        return self._id
+
+
+# здесь объявляйте классы ShopGenericView и ShopUserView
+class ShopGenericView:
+    Exclude = tuple()
+    def __str__(self):
+        return '\n'.join('{0}: {1}'.format(attr, v) for attr, v in self.__dict__.items() if attr not in self.Exclude)
+
+    def __repr__(self):
+        return self.__str__()
+
+class ShopUserView(ShopGenericView):
+    Exclude = ('_id', )
+
+class Book(ShopItem):
+    def __init__(self, title, author, year):
+        super().__init__()
+        self._title = title
+        self._author = author
+        self._year = year
+
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Подвиг 6. Вам доверили разработать набор классов для описания рецептов различных блюд. И подсказали, что вначале
+# нужно объявить отдельные классы для разных продуктов питания, например:
+#
+# class Meat:
+#     """Класс для описания мяса"""
+#
+#
+# class Fish:
+#     """Класс для описания рыбы"""
+#
+#
+# class Potatoes:
+#     """Класс для описания картофеля"""
+# И так далее. Затем, вам в голову приходит два варианта использования этих классов для описания конкретных рецептов
+# блюд:
+#
+# 1-й вариант. Использовать классы продуктов в качестве базовых. Например:
+#
+# class MeatPuree(Meat, Potatoes):
+#     """Рецепт мясного пюре"""
+#
+#
+# class BakedFish(Fish, Potatoes):
+#     """Рецепт запеченой рыбы"""
+# И так далее.
+#
+# 2-й вариант. Использовать объекты классов продуктов в качестве значений локальных атрибутов. Например:
+#
+# class MeatPuree:
+#     def __init__(self, meat, potatoes):
+#         self.__meat = meat
+#         self.__potatoes = potatoes
+# где
+#
+# meat = Meat()
+# potatoes = Potatoes()
+# И так для всех классов рецептов.
+#
+# Какой из этих вариантов предпочтительнее использовать на практике и почему?
+
+
+# - Лучше 2-й вариант, так как он более универсален, проще масштабируется, а большое количество базовых классов делает
+# программу сложной для понимания.
+# - Лучше 2-й вариант, так как здесь класс MeatPuree можно организовать для самых разных рецептов мясного
+# пюре (с разными ингредиентами, а не только теми, что будут указаны в качестве базовых классов).
+
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Подвиг 7. Вам снова доверили разработку набора классов, но теперь для учета различных животных. И несколько
+# начальных классов уже написали:
+#
+# class Animal:
+#     """Класс для описания животного"""
+#
+#
+# class Feet:
+#     """Класс для описания ног"""
+#
+#
+# class Wings:
+#     """Класс для описания крыльев"""
+#
+#
+# class Mouth:
+#     """Класс для описания рта"""
+#
+#
+# class Beak:
+#     """Класс для описания клюва"""
+# Далее, при описании классов конкретных видов животных, эти начальные классы можно использовать несколькими способами:
+#
+# 1-й вариант. Использовать начальные классы в качестве базовых. Например:
+#
+# class Monkey(Animal, Feet, Mouth):
+#     """Класс для описания обезьян"""
+#
+#
+# class Colibri(Animal, Wings, Beak):
+#     """Класс для описания колибри"""
+# И так для всех видов животных.
+#
+# 2-й вариант. Использовать объекты этих классов в качестве значений атрибутов. Например:
+#
+# class Monkey(Animal):
+#     def __init__(self, feet, mouth):
+#         self.__feet = feet
+#         self.__mouth = mouth
+# где
+#
+# feet = Feet()
+# mouth = Mouth()
+# Какой из этих вариантов предпочтительнее использовать на практике и почему?
+
+
+# - 1-й вариант вполне допустим, так как объекты базовых классов являются неотъемлемой частью конкретных видов животных
+# и других вариаций быть не может.
+# - 2-й вариант вполне допустим, так как в инициализаторе создается необходимый набор локальных атрибутов для каждого
+# конкретного вида животного.
+
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Видео-разбор подвига (решение смотреть только после своей попытки): https://youtu.be/yXPFcDe6jco
+#
+# Подвиг 8 (введение в паттерн миксинов - mixins). Часто множественное наследование используют для наполнения дочернего
+# класса определенным функционалом. То есть, с указанием каждого нового базового класса, дочерний класс приобретает все
+# больше и больше возможностей. И, наоборот, убирая часть базовых классов, дочерний класс теряет соответствующую часть
+# функционала.
+#
+# Например, паттерн миксинов активно используют в популярном фреймворке Django.  В частности, когда нужно указать
+# дочернему классу, какие запросы от клиента он должен обрабатывать (запросы типа GET, POST, PUT, DELETE и т.п.). В
+# качестве примера реализуем эту идею в очень упрощенном виде, но сохраняя суть паттерна миксинов.
+#
+# Предположим, что в программе уже существует следующий набор классов:
+#
+# class RetriveMixin:
+#     def get(self, request):
+#         return "GET: " + request.get('url')
+#
+#
+# class CreateMixin:
+#     def post(self, request):
+#         return "POST: " + request.get('url')
+#
+#
+# class UpdateMixin:
+#     def put(self, request):
+#         return "PUT: " + request.get('url')
+# Здесь в каждом классе выполняется имитация обработки запросов. За GET-запрос отвечает метод get() класса
+# RetriveMixin, за POST-запрос - метод post() класса CreateMixin, за PUT-запрос - метод put() класса UpdateMixin.
+#
+# Далее, вам нужно объявить класс с именем GeneralView, в котором следует указать атрибут (на уровне класса):
+#
+# allowed_methods = ('GET', 'POST', 'PUT', 'DELETE')
+# для перечня разрешенных запросов. А также объявить метод render_request со следующей сигнатурой:
+#
+# def render_request(self, request): ...
+#
+# Здесь request - это словарь (объект запроса), в котором обязательно должны быть два ключа:
+#
+# 'url' - адрес для обработки запроса;
+# 'method' - метод запроса: 'GET', 'POST', 'PUT', 'DELETE' и т. д.
+#
+# В методе render_request() нужно сначала проверить, является ли указанный запрос в словаре request
+# разрешенным (присутствует в списке allowed_methods). И если это не так, то генерировать исключение командой:
+#
+# raise TypeError(f"Метод {request.get('method')} не разрешен.")
+# Иначе, вызвать метод по его имени:
+#
+# method_request = request.get('method').lower()  # имя метода, малыми буквами
+# Подсказка: чтобы получить ссылку на метод с именем method_request, воспользуйтесь магическим
+# методом __getattribute__().
+#
+# Для использования полученных классов, в программе объявляется следующий дочерний класс:
+#
+# class DetailView(RetriveMixin, GeneralView):
+#     allowed_methods = ('GET', 'PUT', )
+# Воспользоваться им можно, например, следующим образом (эти строчки в программе не писать):
+#
+# view = DetailView()
+# html = view.render_request({'url': 'https://stepik.org/course/116336/', 'method': 'GET'})
+# print(html)   # GET: https://stepik.org/course/116336/
+# Если в запросе указать другой метод:
+#
+# html = view.render_request({'url': 'https://stepik.org/course/116336/', 'method': 'PUT'})
+# то естественным образом возникнет исключение (реализовывать в программе не нужно, это уже встроено в сам язык
+# Python):
+#
+# AttributeError: 'DetailView' object has no attribute 'put'
+#
+# так как дочерний класс DetailView не имеет метода put. Поправить это можно, если указать соответствующий базовый
+# класс:
+#
+# class DetailView(RetriveMixin, UpdateMixin, GeneralView):
+#     allowed_methods = ('GET', 'PUT', )
+# Теперь, при выполнении команд:
+#
+# view = DetailView()
+# html = view.render_request({'url': 'https://stepik.org/course/116336/', 'method': 'PUT'})
+# print(html)
+# будет выведено:
+#
+# PUT: https://stepik.org/course/116336/
+#
+# Это и есть принцип работы паттерна миксинов.
+#
+# P.S. В программе требуется объявить только класс GeneralView. На экран выводить ничего не нужно.
+
+
+class RetriveMixin:
+    def get(self, request):
+        return "GET: " + request.get('url')
+
+
+class CreateMixin:
+    def post(self, request):
+        return "POST: " + request.get('url')
+
+
+class UpdateMixin:
+    def put(self, request):
+        return "PUT: " + request.get('url')
+
+
+# здесь объявляйте класс GeneralView
+class GeneralView:
+    allowed_methods = ('GET', 'POST', 'PUT', 'DELETE')
+
+    def render_request(self, requests: dict):
+        method = requests.get('method').upper()
+        if method not in self.allowed_methods:
+            raise TypeError(f"Метод {requests.get('method')} не разрешен.")
+        method_request = self.__getattribute__(method.lower())
+        if method_request:
+            return method_request(requests)
+
+
+class DetailView(RetriveMixin, UpdateMixin, GeneralView):
+    allowed_methods = ('GET', 'POST', )
+
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Подвиг 9. Объявите класс с именем Money (деньги), объекты которого создаются командой:
+#
+# money = Money(value)
+# где value - любое число (целое или вещественное). Если указывается не числовое значение, то генерируется исключение
+# командой:
+#
+# raise TypeError('сумма должна быть числом')
+# В каждом объекте этого класса должен формироваться локальный атрибут _money с соответствующим значением. Также в
+# классе Money должно быть объект-свойство (property):
+#
+# money - для записи и считывания значения из атрибута _money.
+#
+# В связке с классом Money работает еще один класс:
+#
+# class MoneyOperators:
+#     def __add__(self, other):
+#         if type(other) in (int, float):
+#             return self.__class__(self.money + other)
+#
+#         if type(self) != type(other):
+#             raise TypeError('Разные типы объектов')
+#
+#         return self.__class__(self.money + other.money)
+# Он определяет работу арифметических операторов. В данном примере описан алгоритм сложения двух объектов класса
+# Money (или объектов его дочерних классов).
+#
+# Обратите внимание, как реализован метод __add__() в этом классе. Он универсален при работе с любыми объектами класса
+# Money или его дочерних классов. Здесь атрибут __class__ - это ссылка на класс объекта self. С помощью __class__ можно
+# создавать объекты того же класса, что и self.
+#
+# Вам необходимо добавить в класс MoneyOperators аналогичную реализацию оператора вычитания.
+#
+# На основе двух классов (Money и MoneyOperators) предполагается создавать классы кошельков разных валют. Например, так:
+#
+# class MoneyR(Money, MoneyOperators):
+#     def __str__(self):
+#         return f"MoneyR: {self.money}"
+#
+#
+# class MoneyD(Money, MoneyOperators):
+#     def __str__(self):
+#         return f"MoneyD: {self.money}"
+# И, затем применять их следующим образом (эти строчки в программе писать не нужно):
+#
+# m1 = MoneyR(1)
+# m2 = MoneyD(2)
+# m = m1 + 10
+# print(m)  # MoneyR: 11
+# m = m1 - 5.4
+# m = m1 + m2  # TypeError
+
+# P.S. В программе требуется объявить только классы. На экран выводить ничего не нужно.
+
+
+class MoneyOperators:
+    def __add__(self, other):
+        if type(other) in (int, float):
+            return self.__class__(self.money + other)
+
+        if type(self) != type(other):
+            raise TypeError('Разные типы объектов')
+
+        return self.__class__(self.money + other.money)
+
+    # здесь объявляйте еще один метод
+    def __sub__(self, other):
+        if type(other) in (int, float):
+            return self.__class__(self.money - other)
+
+        if type(self) != type(other):
+            raise TypeError('Разные типы объектов')
+
+        return self.__class__(self.money - other.money)
+
+
+class Money:
+
+    def __init__(self, val):
+        self._is_valid(val)
+        self._money = val
+
+    def _is_valid(self, val):
+        if type(val) not in (int, float):
+            raise TypeError('сумма должна быть числом')
+        return True
+
+    @property
+    def money(self):
+        return self._money
+
+    @money.setter
+    def money(self, val):
+        if self._is_valid(val):
+            self._money = val
+            return
+
+
+class MoneyR(Money, MoneyOperators):
+    def __str__(self):
+        return f"MoneyR: {self.money}"
+
+
+class MoneyD(Money, MoneyOperators):
+    def __str__(self):
+        return f"MoneyD: {self.money}"
 
 
 
