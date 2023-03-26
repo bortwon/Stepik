@@ -17043,3 +17043,610 @@ class BoxDefender:
 
 
 # ======================================================================================================================
+# 5.6 Посвящение в объектно-ориентированное программирование
+# ======================================================================================================================
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Посвящение в ООП
+# Вы прошли серию испытаний и совершили множество подвигов, чтобы лицом к лицу столкнуться с настоящим
+# вызовом, достойным лишь избранных! Для подтверждения своих знаний и навыков вам предлагается пройти этап посвящения
+# в объектно-ориентированное программирование. И вот задание, которое выпало на вашу долю.
+#
+# Руководство компании целыми днями не знает куда себя деть. Поэтому они решили дать задание своим программистам
+# написать программу игры "Морской бой". Но эта игра будет немного отличаться от классической. Для тех, кто не знаком
+# с этой древней, как мир, игрой, напомню ее краткое описание.
+#
+# Каждый игрок у себя на бумаге рисует игровое поле 10 х 10 клеток и расставляет на нем десять
+# кораблей: однопалубных - 4; двухпалубных - 3; трехпалубных - 2; четырехпалубный - 1.
+
+
+# Корабли расставляются случайным образом, но так, чтобы не выходили за пределы игрового поля и не соприкасались друг
+# с другом (в том числе и по диагонали).
+#
+# Затем, игроки по очереди называют клетки, куда производят выстрелы. И отмечают эти выстрелы на другом таком же поле
+# в 10 х 10 клеток, которое представляет поле соперника. Соперник при этом должен честно отвечать: "промах", если ни
+# один корабль не был задет и "попал", если произошло попадание. Выигрывает тот игрок, который первым поразит все
+# корабли соперника.
+#
+# Но это была игра из глубокого прошлого. Теперь же, в компьютерную эру, корабли на игровом поле могут перемещаться в
+# направлении своей ориентации на одну клетку после каждого хода соперника, если в них не было ни одного попадания.
+#
+# Итак, лично вам поручается сделать важный фрагмент этой игры - расстановку и управление кораблями в этой игре. А само
+# задание звучит так.
+#
+# Техническое задание
+# В программе необходимо объявить два класса:
+#
+# Ship - для представления кораблей;
+# GamePole - для описания игрового поля.
+#
+# Класс Ship
+# Класс Ship должен описывать корабли набором следующих параметров:
+#
+# x, y - координаты начала расположения корабля (целые числа);
+# length - длина корабля (число палуб: целое значение: 1, 2, 3 или 4);
+# tp - ориентация корабля (1 - горизонтальная; 2 - вертикальная).
+
+
+# Объекты класса Ship должны создаваться командами:
+#
+# ship = Ship(length)
+# ship = Ship(length, tp)
+# ship = Ship(length, tp, x, y)
+# По умолчанию (если не указывается) параметр tp = 1, а координаты x, y равны None.
+#
+# В каждом объекте класса Ship должны формироваться следующие локальные атрибуты:
+#
+# _x, _y - координаты корабля (целые значения в диапазоне [0; size), где size - размер игрового поля);
+# _length - длина корабля (число палуб);
+# _tp - ориентация корабля;
+# _is_move - возможно ли перемещение корабля (изначально равно True);
+# _cells - изначально список длиной length, состоящий из единиц (например, при length=3, _cells = [1, 1, 1]).
+#
+# Список _cells будет сигнализировать о попадании соперником в какую-либо палубу корабля. Если стоит 1, то попадания
+# не было, а если стоит значение 2, то произошло попадание в соответствующую палубу.
+#
+# При попадании в корабль (хотя бы одну его палубу), флаг _is_move устанавливается в False и перемещение корабля по
+# игровому полю прекращается.
+#
+# В самом классе Ship должны быть реализованы следующие методы (конечно, возможны и другие, дополнительные):
+#
+# set_start_coords(x, y) - установка начальных координат (запись значений в локальные атрибуты _x, _y);
+# get_start_coords() - получение начальных координат корабля в виде кортежа x, y;
+# move(go) - перемещение корабля в направлении его ориентации на go клеток (go = 1 - движение в одну сторону на
+# клетку; go = -1 - движение в другую сторону на одну клетку); движение возможно только если флаг _is_move = True;
+# is_collide(ship) - проверка на столкновение с другим кораблем ship (столкновением считается, если другой корабль или
+# пересекается с текущим или просто соприкасается, в том числе и по диагонали); метод возвращает True, если
+# столкновение есть и False - в противном случае;
+# is_out_pole(size) - проверка на выход корабля за пределы игрового поля (size - размер игрового
+# поля, обычно, size = 10); возвращается булево значение True, если корабль вышел из игрового поля и False - в
+# противном случае;
+#
+# С помощью магических методов __getitem__() и __setitem__() обеспечить доступ к коллекции _cells следующим образом:
+#
+# value = ship[indx] # считывание значения из _cells по индексу indx (индекс отсчитывается от 0)
+# ship[indx] = value # запись нового значения в коллекцию _cells
+# Класс GamePole
+# Следующий класс GamePole должен обеспечивать работу с игровым полем. Объекты этого класса создаются командой:
+#
+# pole = GamePole(size)
+# где size - размеры игрового поля (обычно, size = 10).
+#
+# В каждом объекте этого класса должны формироваться локальные атрибуты:
+#
+# _size - размер игрового поля (целое положительное число);
+# _ships - список из кораблей (объектов класса Ship); изначально пустой список.
+#
+# В самом классе GamePole должны быть реализованы следующие методы (возможны и другие, дополнительные методы):
+#
+# init() - начальная инициализация игрового поля; здесь создается список из кораблей (объектов класса Ship):
+# однопалубных - 4; двухпалубных - 3; трехпалубных - 2; четырехпалубный - 1 (ориентация этих кораблей должна быть
+# случайной).
+#
+# Корабли формируются в коллекции _ships следующим образом: однопалубных - 4; двухпалубных - 3; трехпалубных - 2;
+# четырехпалубный - 1. Ориентация этих кораблей должна быть случайной. Для этого можно воспользоваться функцией
+# randint следующим образом:
+#
+# [Ship(4, tp=randint(1, 2)), Ship(3, tp=randint(1, 2)), Ship(3, tp=randint(1, 2)), ...]
+# Начальные координаты x, y не расставленных кораблей равны None.
+#
+# После этого, выполняется их расстановка на игровом поле со случайными координатами так, чтобы корабли не пересекались
+# между собой.
+#
+# get_ships() - возвращает коллекцию _ships;
+# move_ships() - перемещает каждый корабль из коллекции _ships на одну клетку (случайным образом вперед или назад) в
+# направлении ориентации корабля; если перемещение в выбранную сторону невозможно (другой корабль или пределы игрового
+# поля), то попытаться переместиться в противоположную сторону, иначе (если перемещения невозможны), оставаться на
+# месте;
+# show() - отображение игрового поля в консоли (корабли должны отображаться значениями из коллекции _cells каждого
+# корабля, вода - значением 0);
+#
+# get_pole() - получение текущего игрового поля в виде двумерного (вложенного) кортежа размерами size x size элементов.
+#
+# Пример отображения игрового поля:
+#
+# 0 0 1 0 1 1 1 0 0 0
+# 1 0 0 0 0 0 0 0 0 0
+# 0 0 0 0 0 0 0 0 0 0
+# 0 0 0 0 0 0 1 0 0 1
+# 0 0 0 0 1 0 1 0 0 1
+# 0 0 0 0 0 0 1 0 0 0
+# 1 1 0 0 0 0 0 0 0 0
+# 0 0 0 0 0 0 1 0 0 0
+# 0 1 1 1 1 0 0 0 0 0
+# 0 0 0 0 0 0 0 1 1 0
+# Пример использования классов (эти строчки в программе не писать):
+#
+# SIZE_GAME_POLE = 10
+#
+# pole = GamePole(SIZE_GAME_POLE)
+# pole.init()
+# pole.show()
+#
+# pole.move_ships()
+# print()
+# pole.show()
+
+# В программе требуется только объявить классы Ship и GamePole с соответствующим функционалом. На экран выводить
+# ничего не нужно.
+#
+# P.S. Для самых преданных поклонников программирования и ООП. Завершите эту программу, добавив еще один класс
+# SeaBattle для управления игровым процессом в целом. Игра должна осуществляться между человеком и компьютером.
+# Выстрелы со стороны компьютера можно реализовать случайным образом в свободные клетки. Сыграйте в эту игру и
+# выиграйте у компьютера.
+
+
+from random import randint, choice
+from itertools import product
+from copy import deepcopy
+from uuid import uuid4
+
+
+class ShipError(Exception):
+    def __init__(self, message):
+        self.message = message
+
+    def __str__(self):
+        return self.message
+
+
+class ShipDefender:
+    """Не изменяет параметры корабля, если в процессе изменения возникла ошибка"""
+
+    def __init__(self, ship):
+        self._ship = ship
+
+    def __enter__(self):
+        self._temp_ship = deepcopy(self._ship)
+        return self._temp_ship
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type is None:
+            self._ship.__dict__ = self._temp_ship.__dict__
+        return True
+
+
+class Ship:
+    def __init__(self, length, tp=1, x=None, y=None):
+        """
+        :param x: х-координата начала расположения корабля;
+        :type x: int | None
+        :param y: у-координата начала расположения корабля;
+        :type y: int | None
+        :param length: длина корабля (число палуб: целое значение: 1, 2, 3 или 4);
+        :type length: int
+        :param tp: ориентация корабля (1 - горизонтальная; 2 - вертикальная).
+        :type tp: int
+        """
+        self._id = uuid4()  # для сравнения кораблей, помогает в self.move()
+        self._x, self._y = None, None
+        self._full_coords = None  # полные координаты
+        self._area = None  # вся занимаемая площадь
+        self._length = length
+        self._tp = tp
+        self._is_move = True
+        self._cells = [1 for _ in range(self._length)]
+        self._is_alive = True
+        self.set_start_coords(x, y)
+
+    def set_start_coords(self, x, y):
+        """Установка начальных координат (запись значений в локальные атрибуты _x, _y)
+        тут же считаем занимаемую площадь и координаты всех палуб"""
+        self._x = x
+        self._y = y
+        self._calculate_full_coords()
+        self._calculate_area()
+
+    def get_start_coords(self) -> tuple:
+        """Получение начальных координат корабля в виде кортежа x, y;"""
+        return self._x, self._y
+
+    def move(self, go=1):
+        """Перемещение корабля в направлении его ориентации на go клеток
+        движение возможно только если флаг _is_move = True;
+
+        :param go: (go = 1 - движение вниз / вправо на 1 клетку;
+        go = -1 - движение вверх / влево на 1 клетку);
+        """
+        if self._is_move:
+            x, y = self._x, self._y
+            if self._tp == 2:
+                y += go
+            else:
+                x += go
+            self.set_start_coords(x, y)
+
+    def is_collide(self, ship) -> bool:
+        """Проверка на столкновение с другим кораблем ship
+        (столкновением считается, если другой корабль или пересекается с текущим или просто соприкасается,
+        в том числе и по диагонали);
+        метод возвращает True, если столкновение есть и False - в противном случае;"""
+        if self == ship:
+            return False
+        if self.full_coords is None or ship.full_coords is None:
+            return False
+        ship1 = self.full_coords
+        ship2 = ship.area + ship.full_coords
+        return any(x in ship2 for x in ship1)
+
+    def is_out_pole(self, size) -> bool:
+        """Проверка на выход корабля за пределы игрового поля
+        возвращается булево значение True, если корабль вышел из игрового поля и False - в противном случае;
+
+        :param size: размер игрового поля, обычно, size = 10);"""
+        if self._x is not None and self._y is not None:
+            return any(x not in range(size) or y not in range(size) for x, y in self.full_coords)
+        return False
+
+    @property
+    def full_coords(self):
+        """Координаты всех палуб корабля"""
+        return self._full_coords
+
+    def _calculate_full_coords(self):
+        """Вычисление координат всех палуб"""
+        if hasattr(self, '_x') and hasattr(self, '_y') \
+                and self._x is not None and self._y is not None:
+            if self._tp == 2:
+                ship_xs = [self._x for _ in range(self._length)]
+                ship_ys = [*range(self._y, self._y + self._length)]
+            else:
+                ship_xs = [*range(self._x, self._x + self._length)]
+                ship_ys = [self._y for _ in range(self._length)]
+            self._full_coords = [*zip(ship_xs, ship_ys)]
+
+    @property
+    def area(self):
+        """Занимаемая площадь, в которой не может быть другого корабля"""
+        return self._area
+
+    def _calculate_area(self):
+        """Вычисление координат всех точек, в которых не может быть другого корабля"""
+        if self.full_coords:
+            area = []
+            for x, y in self.full_coords:
+                tmp_coords = []
+                for dx, dy in product((-1, 0, 1), repeat=2):
+                    if (x + dx, y + dy) not in self.full_coords:
+                        tmp_coords.append((x + dx, y + dy))
+                area.extend(tmp_coords)
+            self._area = area
+
+    def __getitem__(self, idx):
+        return self._cells[idx]
+
+    def __setitem__(self, idx, val):
+        self._cells[idx] = val
+
+    def __repr__(self):
+        return f'Ship {self._length} ({"v" if self._tp == 2 else "h"}) {self.full_coords}'
+
+    def __hash__(self):
+        return hash(self._id)
+
+    def __eq__(self, other):
+        return hash(self) == hash(other)
+
+    @property
+    def is_alive(self):
+        return any(x != 2 for x in self._cells)
+
+
+class GamePole:
+    COMMON_FLEET = [(4, 1), (3, 2), (2, 3), (1, 4)]
+    place_ships_attempts = 0
+
+    def __init__(self, size=10, fleet=None):
+        """
+        :param size: размер поля, по умолчанию 10
+        :param fleet: список кортежей (палубы, корабли), по умолчанию - из значения класса COMMON_FLEET
+        :type fleet: list[tuple[int, int]] | None
+        """
+        self._size = size
+        self._ships = []
+        self.__fleet = self.COMMON_FLEET if fleet is None else fleet
+
+    def get_ships(self):
+        return self._ships
+
+    def init(self):
+        """Заполнение игрового поля. Генерация и расстановка кораблей"""
+        self.__gen_ships()
+        self.__place_ships()
+
+    def __gen_ships(self):
+        """Генерирование кораблей"""
+        for decks, quant in self.__fleet:
+            self._ships.extend([Ship(decks, tp=randint(1, 2)) for _ in range(quant)])
+
+    def __check_collide(self, ship):
+        """Проверка столкновения корабля с другими кораблями флотилии"""
+        for other_ship in self._ships:
+            if ship.is_collide(other_ship):
+                return True
+        return False
+
+    def __check_ship_position(self, ship):
+        """Проверка выхода за пределы поля и столкновения с другими кораблями"""
+        if ship.is_out_pole(self._size):
+            raise ShipError('корабль за пределами поля')
+        if self.__check_collide(ship):
+            raise ShipError('корабли соприкасаются')
+
+    def __place_ships(self):
+        """Расстановка кораблей на поле, с учетом ограничений
+        если за 100 попыток поставить корабль не удалось,
+        сбрасываем расставленные корабли и начинаем заново"""
+        try:
+            placed_ships = 0
+            bad_combination = False
+            total_ships = len(self._ships)
+            while placed_ships < total_ships and not bad_combination:  # пока расставлены не все корабли
+                for ship in self._ships:
+                    not_placed = True
+                    attempts = 0
+                    while not_placed:
+                        attempts += 1
+                        with ShipDefender(ship) as s:  # не изменяем корабль, пока нормально не встанет
+                            x, y = (randint(0, self._size - 1) for _ in 'xy')
+                            s.set_start_coords(x, y)
+                            self.__check_ship_position(s)
+                            not_placed = False
+                            placed_ships += 1
+                        if attempts > 100:  # если пытались поставить корабль 100 раз, прерываем цикл
+                            bad_combination = True
+                            self.place_ships_attempts += 1
+                            break
+                    if bad_combination: break
+            if bad_combination:  # если не удалось поставить корабль, начинаем расставлять заново
+                self._ships = []
+                self.init()
+        except RecursionError:  # если совсем не удается расставить корабли
+            raise GamePoleError(f"""Ошибка!
+Не смогли расставить корабли за {self.place_ships_attempts} попыток.
+Измените размер поля или количество кораблей""")
+
+    def move_ships(self):
+        """Перемещает каждый корабль из коллекции _ships на одну клетку
+        (случайным образом вперед или назад) в направлении ориентации корабля;
+        если перемещение в выбранную сторону невозможно (другой корабль или пределы игрового поля),
+        то попытаться переместиться в противоположную сторону, иначе (если перемещения невозможны),
+        оставаться на месте"""
+        for ship in self._ships:
+            step = choice((1, -1))
+            not_moved = True
+            tries = 0
+            while not_moved and tries < 2:
+                with ShipDefender(ship) as s:
+                    s.move(step)
+                    self.__check_ship_position(s)
+                    not_moved = False
+                step = -step
+                tries += 1
+
+    def show(self):
+        """Отображение игрового поля в консоли
+        (корабли должны отображаться значениями из коллекции _cells каждого корабля,
+        вода - значением 0);"""
+        [print(*row) for row in self.get_pole()]
+
+    def get_text_pole(self, hidden=False):
+        """Возвращаем либо поле со всеми кораблями, либо только с подбитыми"""
+        if hidden:
+            pole = [['▒' if x == 2 else '░' for x in row] for row in self.get_pole()]
+        else:
+            pole = [['░' if x == 0 else '▓' if x == 1 else '▒' for x in row] for row in self.get_pole()]
+
+        for ship in self._ships:  # mark area around killed ships
+            if not ship.is_alive:
+                for row, col in ship.area:
+                    if row in range(self._size) and col in range(self._size):
+                        pole[row][col] = '·'
+        return pole
+
+    def get_pole(self):
+        """Получение текущего игрового поля в виде двумерного (вложенного)
+        кортежа размерами size x size элементов."""
+        pole = [[0 for _ in range(self._size)] for _ in range(self._size)]
+        for ship in self._ships:
+            for coords, deck in zip(ship.full_coords, ship._cells):
+                row, col = coords
+                pole[row][col] = deck
+        return tuple(map(tuple, pole))
+
+    def check_hit(self, x, y):
+        """Проверяем попали ли в корабль"""
+        for ship in self._ships:
+            if (x, y) in ship.full_coords:
+                ship._is_move = False
+                idx = ship.full_coords.index((x, y))
+                ship._cells[idx] = 2
+                if ship.is_alive:
+                    return 1  # ранен
+                else:
+                    return 2  # убит
+        return 0  # мимо
+
+    @property
+    def is_alive_ships(self):
+        return any(ship.is_alive for ship in self._ships)
+
+
+class SeaBattle:
+    def __init__(self, size=None, fleet=None, hide_pc_pole=True):
+        self._size = size if size else 10
+        self._human, self._pc = (GamePole(self._size, fleet) for _ in '12')
+        self._human.init()
+        self._pc.init()
+        self._hide_pc_pole = hide_pc_pole  # показывать или нет поле компьютера (чит)
+        self._game_over = False
+        self._human_turn = True
+        self._human_hit_ship_cells = set()  # координаты попадания в корабль человеком
+        self._pc_hit_ship_cells = set()  # координаты попадания в корабль компьютером
+        self._pc_last_hit = None  # координаты последнего попадание компьютера
+        self._pc_try_to_kill = set()  # координаты сделанных выстрелов вокруг последнего попадания
+        self._pc_already_hit = set()  # уже обстрелянные компьютером ячейки, периодически обнуляются
+
+    @property
+    def game_over(self):
+        return self._game_over
+
+    def input_coords(self):
+        try:
+            x, y = tuple(map(int, input('=> input x, y (separated by space): ').split()))
+            if any(i not in range(self._size) for i in (x, y)):
+                raise IndexError(f'x or y is out of pole. It should be from 0 to {self._size - 1}')
+            if (x, y) in self._human_hit_ship_cells:
+                raise IndexError('cell has been shot already and some ship has been hit')
+            return x, y
+        except IndexError as e:
+            print(e)
+            return False
+        except ValueError as e:
+            print(f'Input error ({e}), try again')
+            return False
+
+    def do_hit(self, x, y, human_hit) -> int:
+        """Делаем выстрел, печатаем результат, проверяем окончание игры,
+        возвращаем цифровой результат выстрела 0 - мимо, 1 - ранил, 2 - убил"""
+        hit_text = {0: 'Missed', 1: 'Wounded', 2: 'Killed'}
+        hit_pole = self._pc if human_hit else self._human
+        hit_result = hit_pole.check_hit(x, y)
+        print(f'{"Human" if human_hit else "PC"} hit at {(x, y)} and', hit_text.get(hit_result))
+        self._game_over = not hit_pole.is_alive_ships
+        return hit_result
+
+    def hit(self):
+        print("-" * 50)
+        winner = ''
+        if self._human_turn:
+            self._human_go()
+            if self._game_over:
+                winner = 'Human'
+            else:
+                self._pc.move_ships()
+                self.show_poles()
+        else:
+            self._pc_go()
+            if self._game_over:
+                winner = 'Computer'
+            else:
+                self._human.move_ships()
+        if self._game_over:
+            print(f'{"=" * 10} Game Over {"=" * 10}')
+            self.show_poles()
+            print(f'{"=" * 10} {winner} wins {"=" * 10}'.upper())
+
+    def show_poles(self):
+        """Выводим на печать оба поля рядом"""
+        human_pole = self._human.get_text_pole()
+        pc_pole = self._pc.get_text_pole(hidden=self._hide_pc_pole)
+        num_head = ' '.join(map(str, range(self._size)))
+        num_head_str = f'{" " * 3}{num_head}{" " * (7 if self._size > 10 else 8)}{num_head}'
+        human = f'{"human":^{len(num_head_str) // 2}}'
+        pc = f'{"computer":^{len(num_head_str) // 2 + 5}}'
+        print(f'{human} {pc}')
+        print(num_head_str)
+        for i, rows in enumerate(zip(human_pole, pc_pole)):
+            h, p = rows
+            print(f'{i:>2}', *h, f'{" " * 3}', f'{i:>2}', *p)
+
+    def _human_go(self):
+        coords = None
+        while not coords:
+            coords = self.input_coords()
+        x, y = coords
+        hit = self.do_hit(x, y, human_hit=True)
+        if not hit:  # если не попали - передаем ход
+            self._human_turn = False
+        else:
+            self._human_hit_ship_cells.add((x, y))
+            if hit == 2:  # если убили
+                for ship in self._pc.get_ships():  # исключаем из стрельбы ячейки вокруг убитого корабля
+                    if not ship.is_alive:
+                        self._human_hit_ship_cells.update(ship.area)
+
+    def _pc_go(self):
+        """Выстрел компьютера. Для придания хоть какой-то осмысленности его действиям:
+        сохраняем координаты попадания и стреляем вокруг них, пока хоть кого нибудь не убьем.
+        Чтобы особо часто в одно место не стрелял - заносим координаты выстрела в сет,
+        сет периодически обнуляем. Постоянно храним только координаты попадания в корабль"""
+        attempts = 0
+        if self._pc_last_hit is not None:
+            x, y = self._pc_last_hit
+            while (x, y) in self._pc_try_to_kill \
+                    or (x, y) in self._pc_hit_ship_cells \
+                    or (x, y) in self._pc_already_hit:
+                x = randint(max(0, x - 3), min(self._size - 1, x + 3))
+                y = randint(max(0, y - 3), min(self._size - 1, y + 3))
+                attempts += 1
+                if attempts > 15:
+                    self._pc_already_hit = set()
+            self._pc_try_to_kill.add((x, y))
+        else:
+            x, y = (randint(0, self._size - 1) for _ in 'xy')
+            while (x, y) in self._pc_hit_ship_cells or (x, y) in self._pc_already_hit:
+                x, y = (randint(0, self._size - 1) for _ in 'xy')
+                attempts += 1
+                if attempts > 15:  # если долго не удается подобрать координаты
+                    self._pc_already_hit = set()  # обнуляем сет ячеек в которые стреляли
+        hit = self.do_hit(x, y, human_hit=False)
+        self._pc_already_hit.add((x, y))
+        if not hit:  # если не попали, передаем ход
+            self._human_turn = True
+        else:
+            self._pc_hit_ship_cells.add((x, y))
+            if hit == 2:
+                for ship in self._human.get_ships():  # исключаем из стрельбы ячейки вокруг убитого корабля
+                    if not ship.is_alive:
+                        self._pc_hit_ship_cells.update(ship.area)
+                self._pc_last_hit = None  # если убили, обнуляем последнее попадание
+                self._pc_try_to_kill = set()  # и обстрелянные ячейки
+            else:
+                if self._pc_last_hit is None:  # если ранили и не было последнего попадания
+                    self._pc_last_hit = (x, y)  # сохраняем координаты
+
+
+def battle():
+    """Можно указать размер поля и какие корабли расставлять
+    можно подглядеть поле компьютера"""
+    # size = 7
+    # ships = [(2, 2), (3, 2), (1, 4)]    # 2 - двухпалубных, 2 - трехпалубных, 4 - однопалубных
+    # hide_pc_pole = False                # открывает поле компьютера
+    # sea_battle = SeaBattle(size, ships, hide_pc_pole=hide_pc_pole)
+
+    sea_battle = SeaBattle()  # ну или со значениями по умолчанию
+
+    while not sea_battle.game_over:
+        sea_battle.hit()
+
+
+if __name__ == '__main__':
+    battle()
+
+
+
+# ======================================================================================================================
+# FINISH COURSE
+# ======================================================================================================================
