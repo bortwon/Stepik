@@ -16331,3 +16331,470 @@ else:
 
 
 # ======================================================================================================================
+# 5.4 Инструкция raise и пользовательские исключения
+# ======================================================================================================================
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Подвиг 1. Выберите все верные утверждения, связанные с оператором raise.
+
+
+# - после оператора raise следует указывать объект класса, унаследованного от BaseException
+# - оператор raise позволяет генерировать различные исключения
+# - после выполнения оператора raise программа останавливает свою работу, если исключение не обрабатывается
+
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Подвиг 2. Имеется следующий фрагмент программы:
+#
+# class LimitException(Exception):
+#     """Превышение лимита"""
+#
+#
+# error = LimitException('превышение лимита нагрузки')
+# raise error
+#
+# Выберите все верные утверждения, относящиеся к этой программе.
+
+
+# - при выполнении команды raise error на экран будет выведено сообщение "превышение лимита нагрузки"
+# - команда raise error сгенерирует исключение типа LimitException
+
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Подвиг 3. Имеется следующий фрагмент программы:
+#
+# class LimitException(Exception):
+#     """Превышение лимита"""
+#
+#
+# class ServerLimitException(LimitException):
+#     """Превышение нагрузки на сервер"""
+#
+#
+# try:
+#     raise ServerLimitException('превышение серверной нагрузки')
+# except LimitException:
+#     print("LimitException")
+# except ServerLimitException:
+#     print("ServerLimitException")
+#
+# Выберите все верные утверждения, относящиеся к этой программе.
+
+
+# - при выполнении этой программы на экране будет отображена строка "LimitException"
+# - программа ни при каких типах исключений не перейдет во второй блок except
+# - после выполнения оператора raise программа перейдет в первый блок except
+
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Подвиг 4. Объявите класс-исключение с именем StringException, унаследованным от базового класса Exception. После
+# этого объявите еще два класса-исключения:
+#
+# NegativeLengthString - ошибка, если длина отрицательная;
+# ExceedLengthString - ошибка, если длина превышает заданное значение;
+#
+# унаследованные от базового класса StringException.
+#
+# Затем, в блоке try (см. программу) пропишите команду генерации исключения для перехода в блок обработки
+# исключения ExceedLengthString.
+
+
+# здесь объявляйте классы
+class StringException(Exception):
+    pass
+
+
+class NegativeLengthString(StringException):
+    """ошибка, если длина отрицательная"""
+
+
+class ExceedLengthString(StringException):
+    """ошибка, если длина превышает заданное значение"""
+
+try:
+    # здесь команда для генерации исключения
+    raise ExceedLengthString()
+except NegativeLengthString:
+    print("NegativeLengthString")
+except ExceedLengthString:
+    print("ExceedLengthString")
+except StringException:
+    print("StringException")
+
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Видео-разбор подвига (решение смотреть только после своей попытки): https://youtu.be/6wnJd7OrNaI
+#
+# Подвиг 5. Объявите в программе класс-исключение с именем PrimaryKeyError, унаследованным от базового
+# класса Exception. Объекты класса PrimaryKeyError должны создаваться командами:
+#
+# e1 = PrimaryKeyError()          # Первичный ключ должен быть целым неотрицательным числом
+# e2 = PrimaryKeyError(id='abc')  # Значение первичного ключа id = abc недопустимо
+# e3 = PrimaryKeyError(pk='123')  # Значение первичного ключа pk = 123 недопустимо
+# В первом варианте команды должно формироваться сообщение об ошибке "Первичный ключ должен быть целым неотрицательным
+# числом". При втором варианте:
+#
+# "Значение первичного ключа id = <id> недопустимо"
+#
+# И при третьем:
+#
+# "Значение первичного ключа pk = <pk> недопустимо"
+#
+# Эти сообщения должны формироваться при отображении объектов класса PrimaryKeyError, например:
+#
+# print(e2) # Значение первичного ключа id = abc недопустимо
+# Затем, сгенерируйте это исключение с аргументом id = -10.5, обработайте его и отобразите на экране объект исключения.
+#
+# Sample Input:
+#
+
+# Sample Output:
+# Значение первичного ключа id = -10.5 недопустимо
+
+
+class PrimaryKeyError(Exception):
+
+    def __init__(self, **kwargs):
+        if not kwargs:
+            self.error_message = "Первичный ключ должен быть целым неотрицательным числом"
+        else:
+            k, v = list(kwargs.items())[0]
+            self.error_message = f"Значение первичного ключа {k} = {v} недопустимо"
+
+    def __str__(self):
+        return self.error_message
+
+
+try:
+    raise PrimaryKeyError(id=-10.5)
+except PrimaryKeyError as e:
+    print(e)
+
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Подвиг 6. Объявите класс DateString для представления дат, объекты которого создаются командой:
+#
+# date = DateString(date_string)
+# где date_string - строка с датой в формате:
+#
+# "DD.MM.YYYY"
+#
+# здесь DD - день (целое число от 1 до 31); MM - месяц (целое число от 1 до 12); YYYY - год (целое число от 1 до 3000).
+# Например:
+#
+# date = DateString("26.05.2022")
+# или
+#
+# date = DateString("26.5.2022") # незначащий ноль может отсутствовать
+# Если указанная дата в строке записана неверно (не по формату), то генерировать исключение с помощью собственного
+# класса:
+#
+# DateError - класс-исключения, унаследованный от класса Exception.
+#
+# В самом классе DateString переопределить магический метод __str__() для формирования строки даты в формате:
+#
+# "DD.MM.YYYY"
+#
+# (здесь должны фигурировать незначащие нули, например, для аргумента "26.5.2022" должна формироваться
+# строка "26.05.2022").
+#
+# Далее, в программе выполняется считывание строки из входного потока командой:
+#
+# date_string = input()
+# Ваша задача создать объект класса DateString с аргументом date_string и вывести объект на экран командой:
+#
+# print(date) # date - объект класса DateString
+# Если же произошло исключение, то вывести сообщение (без кавычек):
+#
+# "Неверный формат даты"
+#
+# Sample Input:
+# 1.2.1812
+
+# Sample Output:
+# 01.02.1812
+
+
+class DateError(Exception): ...
+
+
+class DateString:
+    def __init__(self, date_string):
+        d, m, y = map(int, date_string.split('.'))
+        if d not in range(1, 32) or m not in range(1, 13) or y not in range(1, 3001):
+            raise DateError("Неверный формат даты")
+        self.d = d
+        self.m = m
+        self.y = y
+
+    def __str__(self):
+        return f'{self.d:02}.{self.m:02}.{self.y:04}'
+
+
+date_string = input()
+try:
+    print(DateString(date_string))
+except DateError as e:
+    print(e)
+
+
+# Второй вариант
+from datetime import datetime
+
+class DateError(Exception):
+    pass
+
+class DateString:
+    def __init__(self, date):
+        try:
+            self.date = datetime.strptime(date, '%d.%m.%Y').strftime('%d.%m.%Y')
+        except ValueError:
+            raise DateError
+
+    def __str__(self):
+        return self.date
+
+
+date_string = input()
+try:
+    print(DateString(date_string))
+except DateError:
+    print("Неверный формат даты")
+
+
+# Третий вариант
+import re
+
+
+class DateString:
+    REGEX = r"(?:0?[1-9]|[1-2][0-9]|3[01])\.(?:0?[1-9]|1[0-2])\.(?:[0-2]?[0-9]{1,3}|3000)"
+
+    def __init__(self, date_string):
+        if not re.fullmatch(self.REGEX, date_string) or re.search(r"\.0{1,4}$", date_string):
+            raise DateError
+
+        self.day, self.month, self.year = map(int, date_string.split('.'))
+
+    def __str__(self):
+        return f"{str(self.day).rjust(2, '0')}.{str(self.month).rjust(2, '0')}.{str(self.year).rjust(4, '0')}"
+
+
+class DateError(Exception):
+    def __str__(self):
+        return "Неверный формат даты"
+
+
+date_string = input()
+try:
+    date = DateString(date_string)
+except DateError as err:
+    print(err)
+else:
+    print(date)
+
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Видео-разбор подвига (решение смотреть только после своей попытки): https://youtu.be/wLaOyNN8x7E
+#
+# Значимый подвиг 7. Вам поручается разработать класс TupleData, элементами которого могут являются только объекты
+# классов: CellInteger, CellFloat и CellString.
+
+
+# Вначале в программе нужно объявить класс CellInteger, CellFloat и CellString, объекты которых создаются командами:
+#
+# cell_1 = CellInteger(min_value, max_value)
+# cell_2 = CellFloat(min_value, max_value)
+# cell_3 = CellString(min_length, max_length)
+# где min_value, max_value - минимальное и максимальное допустимое значение в ячейке; min_length,
+# max_length - минимальная и максимальная допустимая длина строки в ячейке.
+#
+# В каждом объекте этих классов должны формироваться локальные атрибуты с именами _min_value, _max_value
+# или _min_length, _max_length и соответствующими значениями.
+#
+# Запись и считывание текущего значения в ячейке должно выполняться через объект-свойство (property) с именем:
+#
+# value - для записи и считывания значения в ячейке (изначально возвращает значение None).
+#
+# Если в момент записи новое значение не соответствует диапазону [min_value; max_value] или [min_length; max_length],
+# то генерируется исключения командами:
+#
+# raise CellIntegerException('значение выходит за допустимый диапазон')  # для объектов класса CellInteger
+# raise CellFloatException('значение выходит за допустимый диапазон')    # для объектов класса CellFloat
+# raise CellStringException('длина строки выходит за допустимый диапазон')  # для объектов класса CellString
+# Все три класса исключений должны быть унаследованы от одного общего класса:
+#
+# CellException
+#
+# Далее, объявите класс TupleData, объекты которого создаются командой:
+#
+# ld = TupleData(cell_1, ..., cell_N)
+# где cell_1, ..., cell_N - объекты классов CellInteger, CellFloat и CellString (в любом порядке и любом количестве).
+#
+# Обращение к отдельной ячейке должно выполняться с помощью оператора:
+#
+# value = ld[index] # считывание значения из ячейке с индексом index
+# ld[index] = value # запись нового значения в ячейку с индексом index
+# Индекс index отсчитывается с нуля (для первой ячейки) и является целым числом. Если значение index выходит за
+# диапазон [0; число ячеек-1], то генерировать исключение IndexError.
+#
+# Также с объектами класса TupleData должны выполняться следующие функции и операторы:
+#
+# res = len(ld) # возвращает общее число элементов (ячеек) в объекте ld
+# for d in ld:  # перебирает значения ячеек объекта ld (значения, а не объекты ячеек)
+#     print(d)
+# Все эти классы в программе можно использовать следующим образом:
+#
+# ld = TupleData(CellInteger(0, 10), CellInteger(11, 20), CellFloat(-10, 10), CellString(1, 100))
+#
+# try:
+#     ld[0] = 1
+#     ld[1] = 20
+#     ld[2] = -5.6
+#     ld[3] = "Python ООП"
+# except CellIntegerException as e:
+#     print(e)
+# except CellFloatException as e:
+#     print(e)
+# except CellStringException as e:
+#     print(e)
+# except CellException:
+#     print("Ошибка при обращении к ячейке")
+# except Exception:
+#     print("Общая ошибка при работе с объектом TupleData")
+
+# P.S. Данная программа должна быть выполнена штатно, без ошибок. На экран отображать ничего не нужно.
+
+
+class CellException(Exception):
+    pass
+
+
+class CellIntegerException(CellException):
+
+    def __str__(self):
+        return 'значение выходит за допустимый диапазон'
+
+
+class CellFloatException(CellException):
+
+    def __str__(self):
+        return 'значение выходит за допустимый диапазон'
+
+
+class CellStringException(CellException):
+
+    def __str__(self):
+        return 'длина строки выходит за допустимый диапазон'
+
+
+class CellInteger:
+
+    def __init__(self, min_value, max_value, value=None):
+        self.__value = value
+        self._min_value = min_value
+        self._max_value = max_value
+
+    @property
+    def value(self):
+        return self.__value
+
+    @value.setter
+    def value(self, val):
+        if type(val) != int or val not in range(self._min_value, self._max_value + 1):
+            raise CellIntegerException()
+        self.__value = val
+
+
+class CellFloat:
+
+    def __init__(self, min_value, max_value, value=None):
+        self.__value = value
+        self._min_value = min_value
+        self._max_value = max_value
+
+    @property
+    def value(self):
+        return self.__value
+
+    @value.setter
+    def value(self, val):
+        if type(val) != float or val not in range(self._min_value, self._max_value + 1):
+            raise CellFloatException()
+        self.__value = val
+
+
+class CellString:
+
+    def __init__(self, min_length, max_length, value=None):
+        self.__value = value
+        self._min_length = min_length
+        self._max_length = max_length
+
+    @property
+    def value(self):
+        return self.__value
+
+    @value.setter
+    def value(self, val):
+        if type(val) != str or len(val) not in range(self._min_length, self._max_length + 1):
+            raise CellStringException()
+        self.__value = val
+
+
+class TupleData:
+
+    def __init__(self, *args):
+        self.args = list(args)
+
+    def check_index(self, indx):
+        if type(indx) == int and 0 <= indx <= len(self.args) - 1:
+            return True
+        raise IndexError()
+
+    def __getitem__(self, item):
+        self.check_index(item)
+        return self.args[item]
+
+    def __setitem__(self, key, value):
+        self.check_index(key)
+        self.args[key] = value
+
+    def __len__(self):
+        return len(self.args)
+
+    def __iter__(self):
+        return iter(self.args)
+
+
+ld = TupleData(CellInteger(0, 10), CellInteger(11, 20), CellFloat(-10, 10), CellString(1, 100))
+
+try:
+    ld[0] = 1
+    ld[1] = 20
+    ld[2] = -5.6
+    ld[3] = "Python ООП"
+except CellIntegerException as e:
+    print(e)
+except CellFloatException as e:
+    print(e)
+except CellStringException as e:
+    print(e)
+except CellException:
+    print("Ошибка при обращении к ячейке")
+except Exception:
+    print("Общая ошибка при работе с объектом TupleData")
+
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+
+# ======================================================================================================================
